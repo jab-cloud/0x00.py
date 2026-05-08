@@ -1,0 +1,3 @@
+## 2025-05-08 - [Accessibility in Jupyter Notebooks]
+**Learning:** Jupyter Notebooks often contain images in Markdown cells that lack descriptive alt text or use labels that describe the file name rather than the image purpose. For accessibility, informative images (like diagrams) need descriptive alt text, while decorative images (like dividers) should have empty alt text to be ignored by screen readers.
+**Action:** When working with notebooks, inspect all image tags (`![]()` and `<img />`) and apply correct accessibility attributes. Informative images get descriptions; decorative ones get `alt=""`.
