@@ -1,0 +1,3 @@
+## 2026-05-11 - [Accessibility in Jupyter Notebooks]
+**Learning:** Decorative elements in Jupyter Notebooks, such as custom dividers (e.g., `![green-divider]`), are often used to structure content but can create unnecessary noise for screen reader users if they have descriptive alt text. Using an empty alt text (Markdown: `![]()`, HTML: `alt=""`) allows screen readers to skip these elements, improving the overall flow of the document. Conversely, informative images like database schemas must have descriptive alt text to be accessible.
+**Action:** Always audit Jupyter Notebooks for decorative images and ensure they use empty alt text. Ensure all informative diagrams and logos have concise, descriptive alt text.
