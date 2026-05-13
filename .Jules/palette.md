@@ -1,0 +1,3 @@
+## 2025-05-14 - Image Accessibility in Jupyter Notebooks
+**Learning:** Decorative images (dividers, logos) in Jupyter Notebooks can cause significant screen reader noise if they have generic alt text like "rmotr" or "green-divider". Informative images like database schemas require descriptive alt text to be accessible. Using empty alt text `![]()` for decorative markdown images is an effective way to hide them from screen readers.
+**Action:** Always audit Jupyter Notebooks for image tags and ensure decorative elements use empty alt text while informative diagrams provide meaningful descriptions.
