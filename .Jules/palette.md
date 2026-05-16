@@ -1,0 +1,3 @@
+## 2026-05-16 - Improving Image Accessibility in Jupyter Notebooks
+**Learning:** Decorative elements in Jupyter Notebooks, like visual dividers, often use markdown image syntax which defaults to using the filename or a generic placeholder as alt text. This creates noise for screen reader users. Using empty alt text `![]()` for these elements allows screen readers to skip them, focusing on the content. Conversely, complex diagrams like ERDs must have descriptive alt text to be accessible.
+**Action:** Always audit Jupyter Notebooks for image-based dividers and ensure they use empty alt text. Ensure informative images have descriptive `alt` attributes, even when using HTML `<img>` tags within markdown cells.
