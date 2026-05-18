@@ -1,0 +1,3 @@
+## 2026-05-18 - Accessibility in Educational Notebooks
+**Learning:** Decorative elements in Jupyter Notebooks, such as colored dividers, create significant noise for screen reader users if they have descriptive alt text like "green-divider". Using empty alt text (`![]` or `alt=""`) allows assistive technologies to ignore these non-informative elements, while descriptive alt text should be reserved for complex diagrams that provide educational value.
+**Action:** Always audit Jupyter Notebooks for decorative images and ensure they are hidden from screen readers using empty alt text. Conversely, ensure all informative diagrams have clear, descriptive alt text.
