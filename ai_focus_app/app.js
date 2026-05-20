@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { text: "Let your eyes look straight ahead; fix your gaze directly before you.", ref: "Proverbs 4:25", tags: ["focus", "distracted"] },
         { text: "The soul of the sluggard craves and gets nothing, while the soul of the diligent is richly supplied.", ref: "Proverbs 13:4", tags: ["diligence", "productivity"] },
         { text: "Commit your work to the Lord, and your plans will be established.", ref: "Proverbs 16:3", tags: ["work", "planning"] },
-        { text: "Blessed are the pure in heart, for they will see God.", ref: "Matthew 5:8", tags: ["purity"] },
-        { text: "How can a young person stay on the path of purity? By living according to your word.", ref: "Psalm 119:9", tags: ["purity"] }
+        { text: "Flee from sexual immorality. All other sins a person commits are outside the body, but whoever sins sexually, sins against their own body.", ref: "1 Corinthians 6:18", tags: ["purity"] },
+        { text: "Finally, brothers and sisters, whatever is true, whatever is noble, whatever is right, whatever is pure, whatever is lovely, whatever is admirable—if anything is excellent or praiseworthy—think about such things.", ref: "Philippians 4:8", tags: ["purity"] },
+        { text: "I made a covenant with my eyes not to look lustfully at a young woman.", ref: "Job 31:1", tags: ["purity"] }
     ];
 
     // State
