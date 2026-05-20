@@ -3,7 +3,7 @@
 FocusMind is a **Progressive Web App (PWA)**, which means you can test it locally, deploy it for free, and install it on your phone like a native app.
 
 ## 1. Local Testing
-Before deploying, you can test the app on your computer.
+Before deploying, you can test the app on your computer. See [TESTING.md](./TESTING.md) for a full checklist.
 
 1. **Open the folder**: Navigate to the `ai_focus_app` directory.
 2. **Start a local server**:
@@ -43,3 +43,6 @@ Once your app is live on an HTTPS URL, follow these steps:
 4. Confirm the installation.
 
 Now FocusMind will appear as an app on your home screen!
+
+---
+**Next Step:** Follow the [Full Testing Checklist](./TESTING.md) to ensure everything is configured correctly.
