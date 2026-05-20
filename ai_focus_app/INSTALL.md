@@ -12,7 +12,11 @@ Before deploying, you can test the app on your computer. See [TESTING.md](./TEST
 3. **Access the app**: Open your browser and go to `http://localhost:8000`.
 
 ## 2. Deployment (Hosting)
-To install the app on mobile, it must be served over **HTTPS**. Here are the easiest ways to deploy:
+To install the app on mobile, it must be served over **HTTPS**.
+
+**Important Note on Icons**: Before deploying, you should replace the placeholder `icon-192.png` and `icon-512.png` files with your own PNG images. Browsers require valid image files defined in the manifest for the "Install" prompt to appear.
+
+Here are the easiest ways to deploy:
 
 ### Option A: GitHub Pages (Recommended)
 1. Create a new GitHub repository.
