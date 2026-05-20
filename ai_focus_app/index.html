@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusMind - AI Focus & Dopamine Control</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>FocusMind</h1>
+            <div class="user-stats">
+                <span id="streak-count">🔥 5 Day Streak</span>
+                <span id="productivity-score">📈 Score: 85</span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="focus-section">
+            <div class="card">
+                <h2>Focus Mode</h2>
+                <p>Block distractions and enter deep work.</p>
+                <button id="focus-toggle" aria-pressed="false">Enter Focus Mode</button>
+            </div>
+        </section>
+
+        <section id="coach-section">
+            <div class="card">
+                <h2>AI Accountability Coach</h2>
+                <div id="chat-window" aria-live="polite">
+                    <div class="message coach">Hello! I'm your coach. Ready to stay focused today?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Talk to your coach..." aria-label="Chat with AI Coach">
+                    <button id="send-btn" aria-label="Send message">Send</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics-section">
+            <div class="card">
+                <h2>Screen Time Analytics</h2>
+                <div class="chart-placeholder" aria-label="Screen time chart showing 3 hours of productive work today.">
+                    <div class="bar" style="height: 60%;" title="Work: 3h"></div>
+                    <div class="bar" style="height: 20%;" title="Social: 1h"></div>
+                    <div class="bar" style="height: 10%;" title="Other: 0.5h"></div>
+                </div>
+                <p>You've been 80% more productive than last week!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 FocusMind. Your brain will thank you.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
