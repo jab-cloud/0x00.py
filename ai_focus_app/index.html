@@ -38,8 +38,17 @@
 
         <section id="blocker-section">
             <div class="card">
-                <h2>App Blocker</h2>
-                <p>Add apps or websites to block during Focus Mode.</p>
+                <h2>App Blocker & Guard</h2>
+                <p>Add apps to block or enable the <strong>AI Safe-Search Guard</strong>.</p>
+
+                <div class="guard-toggle-area">
+                    <label class="switch">
+                        <input type="checkbox" id="safe-guard-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>AI Safe-Search Guard (Auto-block adult content)</span>
+                </div>
+
                 <div class="blocker-input-area">
                     <input type="text" id="block-input" placeholder="e.g. instagram.com" aria-label="App to block">
                     <button id="add-block-btn">Block</button>
@@ -60,6 +69,19 @@
                     <input type="text" id="chat-input" placeholder="Talk to your coach..." aria-label="Chat with AI Coach">
                     <button id="send-btn" aria-label="Send message">Send</button>
                 </div>
+            </div>
+        </section>
+
+        <section id="security-section">
+            <div class="card">
+                <h2>System-Wide Protection</h2>
+                <p>PWAs have browser limits. For <strong>all-browser</strong> protection, use a secure DNS:</p>
+                <ul class="security-tips">
+                    <li><strong>Recommended:</strong> Cloudflare Gateway (1.1.1.3)</li>
+                    <li>Go to Phone Settings > Connections > More Connection Settings > Private DNS.</li>
+                    <li>Enter: <code>family.cloudflare-dns.com</code></li>
+                </ul>
+                <p class="small">This blocks adult content across your entire device.</p>
             </div>
         </section>
 

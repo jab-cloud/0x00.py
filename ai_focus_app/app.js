@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const challengeAnswerEl = document.getElementById('challenge-answer');
     const verifyChallengeBtn = document.getElementById('verify-challenge');
     const toastContainer = document.getElementById('toast-container');
+    const safeGuardToggle = document.getElementById('safe-guard-toggle');
 
     // Verses Database
     const verses = [
@@ -30,7 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { text: "For God has not given us a spirit of fear, but of power and of love and of a sound mind.", ref: "2 Timothy 1:7", tags: ["peace", "mind", "anxiety"] },
         { text: "Let your eyes look straight ahead; fix your gaze directly before you.", ref: "Proverbs 4:25", tags: ["focus", "distracted"] },
         { text: "The soul of the sluggard craves and gets nothing, while the soul of the diligent is richly supplied.", ref: "Proverbs 13:4", tags: ["diligence", "productivity"] },
-        { text: "Commit your work to the Lord, and your plans will be established.", ref: "Proverbs 16:3", tags: ["work", "planning"] }
+        { text: "Commit your work to the Lord, and your plans will be established.", ref: "Proverbs 16:3", tags: ["work", "planning"] },
+        { text: "Blessed are the pure in heart, for they will see God.", ref: "Matthew 5:8", tags: ["purity"] },
+        { text: "How can a young person stay on the path of purity? By living according to your word.", ref: "Psalm 119:9", tags: ["purity"] }
     ];
 
     // State
@@ -38,10 +41,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentChallenge = null;
     let blockedApps = JSON.parse(localStorage.getItem('blockedApps')) || ['facebook.com', 'youtube.com'];
     let userStats = JSON.parse(localStorage.getItem('userStats')) || { streak: 5, score: 85 };
+    let isSafeGuardActive = JSON.parse(localStorage.getItem('isSafeGuardActive')) || false;
 
     // Initialize UI
+    safeGuardToggle.checked = isSafeGuardActive;
     updateStatsUI();
     renderBlockedList();
+
+    // Safe Guard Toggle
+    safeGuardToggle.addEventListener('change', () => {
+        isSafeGuardActive = safeGuardToggle.checked;
+        localStorage.setItem('isSafeGuardActive', JSON.stringify(isSafeGuardActive));
+        if (isSafeGuardActive) {
+            addMessage('coach', 'AI Safe-Search Guard active. I will now monitor and block restricted content.');
+            showToast('Safe-Search Guard Enabled');
+        } else {
+            addMessage('coach', 'Safe-Search Guard disabled. Be careful out there.');
+        }
+    });
 
     // Focus Mode Toggle
     focusToggle.addEventListener('click', () => {
@@ -149,6 +166,17 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
+
+                // Check for restricted content keywords
+                const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
+                const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
+
+                if (containsRestricted) {
+                    relevantVerse = getRandomVerseByTag('purity');
+                    response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    addMessage('coach', response);
+                    return;
+                }
 
                 if (text.includes('tired') || text.includes('weak')) {
                     relevantVerse = getRandomVerseByTag('strength');
