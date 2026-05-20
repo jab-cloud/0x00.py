@@ -1,13 +1,34 @@
-# How to Install FocusMind on Your Mobile
+# How to Test, Deploy, and Install FocusMind
 
-FocusMind is a **Progressive Web App (PWA)**, which means you can install it on your phone without going through an App Store.
+FocusMind is a **Progressive Web App (PWA)**, which means you can test it locally, deploy it for free, and install it on your phone like a native app.
 
-## Step 1: Host Your App
-To install the app on mobile, it must be served over **HTTPS**. You can do this easily and for free using:
-- **GitHub Pages**: Upload these files to a GitHub repo and enable Pages in Settings.
-- **Vercel / Netlify**: Drag and drop the `ai_focus_app` folder into their dashboard.
+## 1. Local Testing
+Before deploying, you can test the app on your computer.
 
-## Step 2: Install on Mobile
+1. **Open the folder**: Navigate to the `ai_focus_app` directory.
+2. **Start a local server**:
+   - If you have Python: `python3 -m http.server 8000`
+   - If you have Node.js: `npx serve`
+3. **Access the app**: Open your browser and go to `http://localhost:8000`.
+
+## 2. Deployment (Hosting)
+To install the app on mobile, it must be served over **HTTPS**. Here are the easiest ways to deploy:
+
+### Option A: GitHub Pages (Recommended)
+1. Create a new GitHub repository.
+2. Upload the contents of the `ai_focus_app` folder (the HTML, CSS, JS, manifest, etc.) to the root of the repository.
+3. Go to **Settings > Pages**.
+4. Under "Build and deployment", select the **main** branch and the **/(root)** folder. Click **Save**.
+5. Your app will be live at `https://<your-username>.github.io/<repo-name>/`.
+
+### Option B: Vercel / Netlify
+1. Go to [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/).
+2. Drag and drop the `ai_focus_app` folder directly into their "Instant Deployment" or "Drop" zone.
+3. They will provide a secure HTTPS URL instantly.
+
+## 3. Install on Mobile
+
+Once your app is live on an HTTPS URL, follow these steps:
 
 ### On iPhone (iOS)
 1. Open **Safari** and navigate to your hosted URL.
