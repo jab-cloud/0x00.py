@@ -91,6 +91,46 @@ button:active {
     background-color: var(--focus-color);
 }
 
+.hidden {
+    display: none !important;
+}
+
+#protection-challenge {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fffaf0;
+    border: 1px solid #fbd38d;
+    border-radius: 8px;
+}
+
+.blocker-input-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#blocked-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#blocked-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #f7fafc;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+}
+
+.remove-block {
+    background-color: #cbd5e0;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
 #chat-window {
     height: 200px;
     overflow-y: auto;

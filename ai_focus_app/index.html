@@ -11,8 +11,8 @@
         <nav>
             <h1>FocusMind</h1>
             <div class="user-stats">
-                <span id="streak-count">🔥 5 Day Streak</span>
-                <span id="productivity-score">📈 Score: 85</span>
+                <span id="streak-count" aria-label="Current streak">🔥 0 Day Streak</span>
+                <span id="productivity-score" aria-label="Current productivity score">📈 Score: 0</span>
             </div>
         </nav>
     </header>
@@ -23,6 +23,27 @@
                 <h2>Focus Mode</h2>
                 <p>Block distractions and enter deep work.</p>
                 <button id="focus-toggle" aria-pressed="false">Enter Focus Mode</button>
+
+                <div id="protection-challenge" class="hidden">
+                    <p><strong>Uninstall Protection Active:</strong> Solve to unlock.</p>
+                    <p id="math-problem">5 + 7 = ?</p>
+                    <input type="number" id="challenge-answer" placeholder="Answer">
+                    <button id="verify-challenge">Unlock</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="blocker-section">
+            <div class="card">
+                <h2>App Blocker</h2>
+                <p>Add apps or websites to block during Focus Mode.</p>
+                <div class="blocker-input-area">
+                    <input type="text" id="block-input" placeholder="e.g. instagram.com" aria-label="App to block">
+                    <button id="add-block-btn">Block</button>
+                </div>
+                <ul id="blocked-list" aria-label="List of blocked apps">
+                    <!-- Blocked apps will appear here -->
+                </ul>
             </div>
         </section>
 
@@ -47,7 +68,7 @@
                     <div class="bar" style="height: 20%;" title="Social: 1h"></div>
                     <div class="bar" style="height: 10%;" title="Other: 0.5h"></div>
                 </div>
-                <p>You've been 80% more productive than last week!</p>
+                <p id="analytics-summary">You've been 80% more productive than last week!</p>
             </div>
         </section>
     </main>
