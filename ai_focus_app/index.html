@@ -13,9 +13,12 @@
     <header>
         <nav>
             <h1>FocusMind</h1>
-            <div class="user-stats">
-                <span id="streak-count" aria-label="Current streak">🔥 0 Day Streak</span>
-                <span id="productivity-score" aria-label="Current productivity score">📈 Score: 0</span>
+            <div class="header-controls">
+                <button id="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+                <div class="user-stats">
+                    <span id="streak-count" aria-label="Current streak">🔥 0 Day Streak</span>
+                    <span id="productivity-score" aria-label="Current productivity score">📈 Score: 0</span>
+                </div>
             </div>
         </nav>
     </header>
@@ -23,9 +26,22 @@
     <main>
         <section id="focus-section">
             <div class="card">
-                <h2>Focus Mode</h2>
+                <h2>Focus & Pomodoro</h2>
+                <div id="timer-display" aria-live="off">25:00</div>
                 <p>Block distractions and enter deep work.</p>
-                <button id="focus-toggle" aria-pressed="false">Enter Focus Mode</button>
+
+                <div class="focus-controls">
+                    <button id="focus-toggle" aria-pressed="false">Enter Focus Mode</button>
+                </div>
+
+                <div id="goals-area">
+                    <h3>Top 3 Goals</h3>
+                    <div class="goal-input-area">
+                        <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
+                        <button id="add-goal-btn">Add</button>
+                    </div>
+                    <ul id="goals-list"></ul>
+                </div>
 
                 <div id="protection-challenge" class="hidden">
                     <p><strong>Uninstall Protection Active:</strong> Solve to unlock.</p>

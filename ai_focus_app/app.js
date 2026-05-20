@@ -9,6 +9,7 @@ if ('serviceWorker' in navigator) {
 document.addEventListener('DOMContentLoaded', () => {
     // Elements
     const focusToggle = document.getElementById('focus-toggle');
+    const timerDisplay = document.getElementById('timer-display');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const chatWindow = document.getElementById('chat-window');
@@ -23,6 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifyChallengeBtn = document.getElementById('verify-challenge');
     const toastContainer = document.getElementById('toast-container');
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
+    const themeToggle = document.getElementById('theme-toggle');
+    const goalInput = document.getElementById('goal-input');
+    const addGoalBtn = document.getElementById('add-goal-btn');
+    const goalsList = document.getElementById('goals-list');
 
     // Verses Database
     const verses = [
@@ -43,11 +48,30 @@ document.addEventListener('DOMContentLoaded', () => {
     let blockedApps = JSON.parse(localStorage.getItem('blockedApps')) || ['facebook.com', 'youtube.com'];
     let userStats = JSON.parse(localStorage.getItem('userStats')) || { streak: 5, score: 85 };
     let isSafeGuardActive = JSON.parse(localStorage.getItem('isSafeGuardActive')) || false;
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    let goals = JSON.parse(localStorage.getItem('goals')) || [];
+
+    // Timer State
+    let timerInterval = null;
+    let timeLeft = 25 * 60;
+    let isBreak = false;
 
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
     updateStatsUI();
     renderBlockedList();
+    renderGoals();
+    updateTimerDisplay();
+
+    // Theme Toggle
+    themeToggle.addEventListener('click', () => {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        localStorage.setItem('theme', currentTheme);
+    });
 
     // Safe Guard Toggle
     safeGuardToggle.addEventListener('change', () => {
@@ -64,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Focus Mode Toggle
     focusToggle.addEventListener('click', () => {
         if (isFocusMode) {
-            // Simulated Uninstall/Exit Protection
             showChallenge();
         } else {
             enterFocusMode();
@@ -76,13 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
         focusToggle.textContent = 'Exit Focus Mode';
         focusToggle.classList.add('active');
         focusToggle.setAttribute('aria-pressed', 'true');
-        document.body.style.backgroundColor = '#fff5f5';
+        document.body.style.backgroundColor = currentTheme === 'light' ? '#fff5f5' : '#4a2c2c';
 
         const focusVerse = getRandomVerseByTag('focus');
         addMessage('coach', `Focus Mode activated. ${focusVerse.text} (${focusVerse.ref})`);
         showToast(`Motivation: "${focusVerse.text}" - ${focusVerse.ref}`);
 
-        // Increase score slightly when starting focus mode
+        startTimer();
+
         userStats.score = Math.min(100, userStats.score + 1);
         saveStats();
     }
@@ -92,10 +116,119 @@ document.addEventListener('DOMContentLoaded', () => {
         focusToggle.textContent = 'Enter Focus Mode';
         focusToggle.classList.remove('active');
         focusToggle.setAttribute('aria-pressed', 'false');
-        document.body.style.backgroundColor = '#f0f4f8';
+        document.body.style.backgroundColor = '';
         challengeDiv.classList.add('hidden');
         addMessage('coach', 'Focus Mode deactivated. Great work! Take a short break.');
+
+        stopTimer();
+        timeLeft = 25 * 60;
+        isBreak = false;
+        updateTimerDisplay();
     }
+
+    // Timer Logic
+    function updateTimerDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        document.title = `${timerDisplay.textContent} - FocusMind`;
+    }
+
+    function startTimer() {
+        if (timerInterval) return;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                handleTimerComplete();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function handleTimerComplete() {
+        stopTimer();
+        if (!isBreak) {
+            isBreak = true;
+            timeLeft = 5 * 60;
+            addMessage('coach', 'Pomodoro complete! Take a 5-minute break. You earned it.');
+            showToast('Time for a break!');
+            userStats.score = Math.min(100, userStats.score + 5);
+            saveStats();
+        } else {
+            isBreak = false;
+            timeLeft = 25 * 60;
+            addMessage('coach', 'Break over! Ready for another focused session?');
+            showToast('Back to work!');
+        }
+        updateTimerDisplay();
+        if (isFocusMode) startTimer();
+    }
+
+    // Goals Logic
+    addGoalBtn.addEventListener('click', () => {
+        const text = goalInput.value.trim();
+        if (text && goals.length < 3) {
+            goals.push({ text, completed: false });
+            goalInput.value = '';
+            saveGoals();
+            renderGoals();
+        }
+    });
+
+    function renderGoals() {
+        goalsList.innerHTML = '';
+        goals.forEach((goal, index) => {
+            const li = document.createElement('li');
+            li.className = goal.completed ? 'completed' : '';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = goal.completed;
+            checkbox.setAttribute('data-index', index);
+
+            const span = document.createElement('span');
+            span.textContent = goal.text;
+
+            const btn = document.createElement('button');
+            btn.className = 'remove-block';
+            btn.setAttribute('data-index', index);
+            btn.style.marginLeft = 'auto';
+            btn.textContent = '×';
+
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            li.appendChild(btn);
+            goalsList.appendChild(li);
+        });
+    }
+
+    goalsList.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+            const index = e.target.getAttribute('data-index');
+            goals[index].completed = e.target.checked;
+            if (goals[index].completed) {
+                showToast('Goal achieved! Great job.');
+                userStats.score = Math.min(100, userStats.score + 2);
+                saveStats();
+            }
+            saveGoals();
+            renderGoals();
+        }
+    });
+
+    goalsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-block')) {
+            const index = e.target.getAttribute('data-index');
+            goals.splice(index, 1);
+            saveGoals();
+            renderGoals();
+        }
+    });
 
     // Protection Challenge
     function showChallenge() {
@@ -132,16 +265,13 @@ document.addEventListener('DOMContentLoaded', () => {
         blockedList.innerHTML = '';
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
-
             const span = document.createElement('span');
             span.textContent = app;
-
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
             btn.setAttribute('aria-label', `Remove ${app}`);
             btn.textContent = '×';
-
             li.appendChild(span);
             li.appendChild(btn);
             blockedList.appendChild(li);
@@ -168,7 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 let response = "";
                 let relevantVerse = null;
 
-                // Check for restricted content keywords
                 const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
                 const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
 
@@ -232,6 +361,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveBlockedApps() {
         localStorage.setItem('blockedApps', JSON.stringify(blockedApps));
+    }
+
+    function saveGoals() {
+        localStorage.setItem('goals', JSON.stringify(goals));
     }
 
     function showToast(message) {

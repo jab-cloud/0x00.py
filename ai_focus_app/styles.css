@@ -6,6 +6,15 @@
     --card-bg: #ffffff;
     --border-color: #e2e8f0;
     --focus-color: #e53e3e;
+    --timer-color: #2d3748;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a202c;
+    --text-color: #e2e8f0;
+    --card-bg: #2d3748;
+    --border-color: #4a5568;
+    --timer-color: #63b3ed;
 }
 
 body {
@@ -34,6 +43,18 @@ h1 {
     margin: 0;
     color: var(--primary-color);
     font-size: 1.5rem;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#theme-toggle {
+    background: none;
+    padding: 0.5rem;
+    font-size: 1.25rem;
 }
 
 .user-stats span {
@@ -80,11 +101,62 @@ button:active {
     transform: scale(0.98);
 }
 
+#timer-display {
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    color: var(--timer-color);
+    margin: 1rem 0;
+    font-variant-numeric: tabular-nums;
+}
+
 #focus-toggle {
     background-color: var(--primary-color);
     color: white;
     font-size: 1.1rem;
-    margin-top: 1rem;
+    width: 100%;
+}
+
+#goals-area {
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+#goals-area h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.goal-input-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#goals-list {
+    list-style: none;
+    padding: 0;
+}
+
+#goals-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+#goals-list li.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+#goals-list input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
 }
 
 #focus-toggle.active {
