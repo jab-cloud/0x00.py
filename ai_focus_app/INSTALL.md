@@ -44,5 +44,12 @@ Once your app is live on an HTTPS URL, follow these steps:
 
 Now FocusMind will appear as an app on your home screen!
 
+## 4. How to Update
+When you want to make changes to your app:
+1. **Push Changes**: Simply upload your updated files to GitHub or Vercel.
+2. **Increment Version**: In `sw.js`, change the `CACHE_NAME` (e.g., from `v1.1` to `v1.2`).
+3. **Auto-Update**: Next time you open the app on your mobile, a message will appear: *"New version available! Click to update."*
+4. **Refresh**: Click the message to instantly load the new version.
+
 ---
 **Next Step:** Follow the [Full Testing Checklist](./TESTING.md) to ensure everything is configured correctly.

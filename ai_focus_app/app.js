@@ -1,8 +1,31 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered'))
-            .catch(err => console.log('Service Worker registration failed', err));
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            console.log('Service Worker registered');
+
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateToast();
+                    }
+                });
+            });
+        }).catch(err => console.log('Service Worker registration failed', err));
+    });
+}
+
+function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.className = 'toast update-toast';
+    toast.style.cursor = 'pointer';
+    toast.style.backgroundColor = '#2c5282';
+    toast.innerHTML = '✨ New version available! Click to update.';
+
+    document.getElementById('toast-container').appendChild(toast);
+
+    toast.addEventListener('click', () => {
+        window.location.reload();
     });
 }
 
