@@ -149,6 +149,14 @@ button:active {
     margin-bottom: 0.5rem;
 }
 
+#goals-list li.empty-state, #blocked-list li.empty-state {
+    justify-content: center;
+    font-style: italic;
+    color: #718096;
+    background-color: transparent;
+    border: 1px dashed var(--border-color);
+}
+
 #goals-list li.completed {
     opacity: 0.6;
     text-decoration: line-through;
@@ -268,6 +276,11 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+.clickable-label {
+    cursor: pointer;
+    user-select: none;
 }
 
 .security-tips {
