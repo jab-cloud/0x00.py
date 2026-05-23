@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderBlockedList();
     renderGoals();
     updateTimerDisplay();
+    updateGoalInputState();
 
     // Theme Toggle
     themeToggle.addEventListener('click', () => {
@@ -193,6 +194,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
+    function updateGoalInputState() {
+        const isLimitReached = goals.length >= 3;
+        goalInput.disabled = isLimitReached;
+        addGoalBtn.disabled = isLimitReached;
+        goalInput.placeholder = isLimitReached ? "Limit reached (max 3)" : "What's your priority?";
+    }
+
     addGoalBtn.addEventListener('click', () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
@@ -200,34 +208,44 @@ document.addEventListener('DOMContentLoaded', () => {
             goalInput.value = '';
             saveGoals();
             renderGoals();
+            updateGoalInputState();
         }
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
-        goals.forEach((goal, index) => {
+        if (goals.length === 0) {
             const li = document.createElement('li');
-            li.className = goal.completed ? 'completed' : '';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = goal.completed;
-            checkbox.setAttribute('data-index', index);
-
-            const span = document.createElement('span');
-            span.textContent = goal.text;
-
-            const btn = document.createElement('button');
-            btn.className = 'remove-block';
-            btn.setAttribute('data-index', index);
-            btn.style.marginLeft = 'auto';
-            btn.textContent = '×';
-
-            li.appendChild(checkbox);
-            li.appendChild(span);
-            li.appendChild(btn);
+            li.className = 'empty-state';
+            li.textContent = 'No goals set. Add your top 3 priorities!';
             goalsList.appendChild(li);
-        });
+        } else {
+            goals.forEach((goal, index) => {
+                const li = document.createElement('li');
+                li.className = goal.completed ? 'completed' : '';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = goal.completed;
+                checkbox.setAttribute('data-index', index);
+                checkbox.setAttribute('aria-label', `Mark "${goal.text}" as complete`);
+
+                const span = document.createElement('span');
+                span.textContent = goal.text;
+
+                const btn = document.createElement('button');
+                btn.className = 'remove-block';
+                btn.setAttribute('data-index', index);
+                btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
+                btn.style.marginLeft = 'auto';
+                btn.textContent = '×';
+
+                li.appendChild(checkbox);
+                li.appendChild(span);
+                li.appendChild(btn);
+                goalsList.appendChild(li);
+            });
+        }
     }
 
     goalsList.addEventListener('change', (e) => {
@@ -250,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             goals.splice(index, 1);
             saveGoals();
             renderGoals();
+            updateGoalInputState();
         }
     });
 
@@ -286,19 +305,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
-        blockedApps.forEach((app, index) => {
+        if (blockedApps.length === 0) {
             const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = app;
-            const btn = document.createElement('button');
-            btn.className = 'remove-block';
-            btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
-            btn.textContent = '×';
-            li.appendChild(span);
-            li.appendChild(btn);
+            li.className = 'empty-state';
+            li.textContent = 'No apps blocked. Stay focused!';
             blockedList.appendChild(li);
-        });
+        } else {
+            blockedApps.forEach((app, index) => {
+                const li = document.createElement('li');
+                const span = document.createElement('span');
+                span.textContent = app;
+                const btn = document.createElement('button');
+                btn.className = 'remove-block';
+                btn.setAttribute('data-index', index);
+                btn.setAttribute('aria-label', `Remove ${app}`);
+                btn.textContent = '×';
+                li.appendChild(span);
+                li.appendChild(btn);
+                blockedList.appendChild(li);
+            });
+        }
     }
 
     blockedList.addEventListener('click', (e) => {
