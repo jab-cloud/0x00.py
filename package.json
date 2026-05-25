@@ -1,0 +1,11 @@
+{
+  "name": "focus-mind",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No tests specified\"",
+    "lint": "echo \"No linting specified\"",
+    "format": "echo \"No formatting specified\"",
+    "build": "echo \"No build specified\""
+  }
+}
