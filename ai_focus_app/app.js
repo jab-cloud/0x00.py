@@ -234,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
             goalsList.appendChild(li);
         });
 
-        // Update input state based on goal limit
         const isFull = goals.length >= 3;
         goalInput.disabled = isFull;
         addGoalBtn.disabled = isFull;
