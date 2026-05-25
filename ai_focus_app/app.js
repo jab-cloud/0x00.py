@@ -205,6 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            goalsList.innerHTML = '<li class="small" style="text-align: center; font-style: italic; padding: 1rem;">No goals yet. Add your top 3!</li>';
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -220,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -228,6 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(btn);
             goalsList.appendChild(li);
         });
+
+        const isFull = goals.length >= 3;
+        goalInput.disabled = isFull;
+        addGoalBtn.disabled = isFull;
+        goalInput.placeholder = isFull ? "Limit reached (max 3)" : "What's your priority?";
     }
 
     goalsList.addEventListener('change', (e) => {
@@ -286,6 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            blockedList.innerHTML = '<li class="small" style="text-align: center; font-style: italic; padding: 1rem;">No apps blocked. Stay focused!</li>';
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
