@@ -386,6 +386,11 @@ footer {
     to { transform: translateX(0); opacity: 1; }
 }
 
+.clickable-label {
+    cursor: pointer;
+    flex-grow: 1;
+}
+
 /* Accessibility: Focus styles */
 button:focus, input:focus {
     outline: 3px solid rgba(74, 144, 226, 0.5);
