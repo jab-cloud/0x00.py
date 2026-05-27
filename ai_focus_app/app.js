@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
             goals.push({ text, completed: false });
@@ -201,10 +201,26 @@ document.addEventListener('DOMContentLoaded', () => {
             saveGoals();
             renderGoals();
         }
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+
+        if (goals.length >= 3) {
+            goalInput.disabled = true;
+            addGoalBtn.disabled = true;
+            goalInput.placeholder = "3 goals reached! Remove one to add more.";
+        } else {
+            goalInput.disabled = false;
+            addGoalBtn.disabled = false;
+            goalInput.placeholder = "What's your priority?";
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', goal.completed ? `Mark "${goal.text}" as incomplete` : `Mark "${goal.text}" as complete`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -264,17 +282,22 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeAnswerEl.focus();
     }
 
-    verifyChallengeBtn.addEventListener('click', () => {
+    const handleVerifyChallenge = () => {
         if (parseInt(challengeAnswerEl.value) === currentChallenge) {
             exitFocusMode();
         } else {
             addMessage('coach', "Wrong answer! I'm keeping Focus Mode active to protect your productivity.");
             showChallenge();
         }
+    };
+
+    verifyChallengeBtn.addEventListener('click', handleVerifyChallenge);
+    challengeAnswerEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleVerifyChallenge();
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,6 +305,11 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
@@ -359,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 

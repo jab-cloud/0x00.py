@@ -9,3 +9,9 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-05-27 - Keyboard Accessibility and Descriptive ARIA Labels
+
+**Learning:** Enhancing keyboard navigation (Enter key support) and using dynamic, context-specific ARIA labels significantly improves the micro-UX for productivity tools. Preventing user error through state-based UI feedback (disabling inputs at limits) is more effective than showing error messages after the fact.
+
+**Action:** Implemented Enter key support for all inputs, added dynamic ARIA labels to goal items, and added visual feedback for the 3-goal limit.
