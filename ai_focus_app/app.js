@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     addGoalBtn.addEventListener('click', handleAddGoal);
-    goalInput.addEventListener('keypress', (e) => {
+    goalInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleAddGoal();
     });
 
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     verifyChallengeBtn.addEventListener('click', handleVerifyChallenge);
-    challengeAnswerEl.addEventListener('keypress', (e) => {
+    challengeAnswerEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleVerifyChallenge();
     });
 
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     addBlockBtn.addEventListener('click', handleAddBlock);
-    blockInput.addEventListener('keypress', (e) => {
+    blockInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleAddBlock();
     });
 
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 

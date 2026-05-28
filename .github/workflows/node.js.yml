@@ -25,7 +25,11 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Install pnpm
+      run: if [ -f package.json ]; then npm install -g pnpm; fi
+    - name: Install dependencies
+      run: if [ -f package.json ]; then pnpm install; fi
+    - name: Build
+      run: if [ -f package.json ]; then pnpm run build --if-present; fi
+    - name: Test
+      run: if [ -f package.json ]; then pnpm test; fi
