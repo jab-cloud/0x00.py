@@ -9,3 +9,7 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-05-28 - FocusMind UX & Accessibility Polish
+**Learning:** Micro-UX enhancements like 'Enter' key support and visual feedback for limits (e.g., 3-goal cap) significantly improve the "feel" of a productivity app. Accessibility is enhanced not just by ARIA labels, but by ensuring interactive elements have a clear purpose and state feedback.
+**Action:** Always include keyboard support for form-like inputs and provide descriptive placeholders or disabled states when business logic constraints (like item limits) are met.
