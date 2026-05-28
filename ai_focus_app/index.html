@@ -46,7 +46,7 @@
                 <div id="protection-challenge" class="hidden">
                     <p><strong>Uninstall Protection Active:</strong> Solve to unlock.</p>
                     <p id="math-problem">5 + 7 = ?</p>
-                    <input type="number" id="challenge-answer" placeholder="Answer">
+                    <input type="number" id="challenge-answer" placeholder="Answer" aria-label="Math challenge answer">
                     <button id="verify-challenge">Unlock</button>
                 </div>
             </div>
@@ -62,7 +62,7 @@
                         <input type="checkbox" id="safe-guard-toggle">
                         <span class="slider round"></span>
                     </label>
-                    <span>AI Safe-Search Guard (Auto-block adult content)</span>
+                    <label for="safe-guard-toggle" style="cursor: pointer;">AI Safe-Search Guard (Auto-block adult content)</label>
                 </div>
 
                 <div class="blocker-input-area">
