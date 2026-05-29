@@ -205,6 +205,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        const isLimitReached = goals.length >= 3;
+        goalInput.disabled = isLimitReached;
+        addGoalBtn.disabled = isLimitReached;
+        goalInput.placeholder = isLimitReached ? '3 goals reached! Remove one to add more.' : 'What\'s your priority?';
+
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.textContent = 'Add up to 3 focus goals for today.';
+            li.style.justifyContent = 'center';
+            goalsList.appendChild(li);
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as complete`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: "${goal.text}"`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -286,6 +301,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.textContent = 'No apps blocked yet.';
+            li.style.justifyContent = 'center';
+            blockedList.appendChild(li);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -359,8 +382,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
+    });
+
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addGoalBtn.click();
+    });
+
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addBlockBtn.click();
+    });
+
+    challengeAnswerEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') verifyChallengeBtn.click();
     });
 
     // Helpers
