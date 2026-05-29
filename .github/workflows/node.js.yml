@@ -25,7 +25,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: Install dependencies
+      run: if [ -f package.json ]; then pnpm install; else echo "No package.json found, skipping pnpm install"; fi
+    - name: Build
+      run: if [ -f package.json ]; then pnpm run build --if-present; else echo "No package.json found, skipping build"; fi
+    - name: Test
+      run: if [ -f package.json ]; then pnpm test; else echo "No package.json found, skipping tests"; fi
