@@ -288,6 +288,22 @@ input:checked + .slider:before {
     color: #718096;
 }
 
+.empty-state {
+    text-align: center;
+    padding: 1.5rem;
+    color: #718096;
+    font-style: italic;
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.clickable-label {
+    cursor: pointer;
+    user-select: none;
+    flex-grow: 1;
+}
+
 #chat-window {
     height: 200px;
     overflow-y: auto;
