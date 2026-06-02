@@ -205,6 +205,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.style.display = 'flex'; li.style.justifyContent = 'center';
+            li.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(li);
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -286,6 +293,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.style.display = 'flex'; li.style.justifyContent = 'center';
+            li.textContent = 'No apps blocked. Stay focused!';
+            blockedList.appendChild(li);
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
