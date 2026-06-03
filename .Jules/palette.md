@@ -12,4 +12,8 @@
 
 ## 2026-06-03 - AI Coach Thinking Indicator
 **Learning:** Adding a "thinking" indicator for asynchronous AI interactions significantly improves the perceived responsiveness of the application and reduces user uncertainty during processing delays.
-**Action:** Implemented a 'thinking' indicator in the AI Coach chat with 'role="status"' and 'aria-live="polite"' to ensure both visual and screen-reader accessibility.
+**Action:** Use 'role="status"' and 'aria-live="polite"' on transient status messages to ensure accessibility.
+
+## 2026-06-03 - CI Workflow Fix for Non-Node Projects
+**Learning:** GitHub Actions workflows for Node.js can fail if 'cache: npm' is specified without a 'package-lock.json'. Conditioning commands ensures stability in hybrid repositories.
+**Action:** Remove mandatory cache from 'setup-node' and wrap pnpm commands in 'package.json' existence checks.
