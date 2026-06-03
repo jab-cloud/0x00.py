@@ -9,3 +9,7 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-06-03 - AI Coach Thinking Indicator
+**Learning:** Adding a "thinking" indicator for asynchronous AI interactions significantly improves the perceived responsiveness of the application and reduces user uncertainty during processing delays.
+**Action:** Implemented a 'thinking' indicator in the AI Coach chat with 'role="status"' and 'aria-live="polite"' to ensure both visual and screen-reader accessibility.

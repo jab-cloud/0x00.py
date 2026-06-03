@@ -317,7 +317,19 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            // Add thinking indicator
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'message coach thinking';
+            thinkingDiv.setAttribute('role', 'status');
+            thinkingDiv.setAttribute('aria-live', 'polite');
+            thinkingDiv.textContent = 'Coach is thinking...';
+            thinkingDiv.style.fontStyle = 'italic';
+            thinkingDiv.style.opacity = '0.7';
+            chatWindow.appendChild(thinkingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
             setTimeout(() => {
+                thinkingDiv.remove();
                 let response = "";
                 let relevantVerse = null;
 
