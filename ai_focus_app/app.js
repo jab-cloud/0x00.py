@@ -317,7 +317,10 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
+
             setTimeout(() => {
+                thinkingMsg.remove();
                 let response = "";
                 let relevantVerse = null;
 
@@ -364,12 +367,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
+        if (isThinking) {
+            msgDiv.classList.add('thinking');
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+            msgDiv.style.fontStyle = 'italic';
+            msgDiv.style.opacity = '0.7';
+        }
         msgDiv.textContent = text;
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
