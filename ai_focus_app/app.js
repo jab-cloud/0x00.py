@@ -371,12 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
         if (isThinking) {
-            msgDiv.style.fontStyle = 'italic';
-            msgDiv.style.opacity = '0.7';
+            const em = document.createElement('em');
+            em.className = 'small';
+            em.textContent = text;
+            msgDiv.appendChild(em);
             msgDiv.setAttribute('role', 'status');
             msgDiv.setAttribute('aria-live', 'polite');
+            msgDiv.style.opacity = '0.7';
+        } else {
+            msgDiv.textContent = text;
         }
-        msgDiv.textContent = text;
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
         return msgDiv;
