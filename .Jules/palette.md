@@ -9,3 +9,9 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-06-06 - Chat Micro-UX and Input Locking
+
+**Learning:** In chat-based micro-UX, providing immediate feedback (like a "Thinking..." indicator) is crucial for responsiveness. Locking inputs during this state prevents race conditions and duplicate submissions. Using `textContent` and `createElement` instead of `innerHTML` for status indicators ensures safety even with hardcoded strings.
+
+**Action:** Implemented a thinking indicator and input/button locking for the AI Coach. Refactored message rendering to use safer DOM APIs.
