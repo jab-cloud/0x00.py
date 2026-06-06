@@ -15,3 +15,9 @@
 **Learning:** In chat-based micro-UX, providing immediate feedback (like a "Thinking..." indicator) is crucial for responsiveness. Locking inputs during this state prevents race conditions and duplicate submissions. Using `textContent` and `createElement` instead of `innerHTML` for status indicators ensures safety even with hardcoded strings.
 
 **Action:** Implemented a thinking indicator and input/button locking for the AI Coach. Refactored message rendering to use safer DOM APIs.
+
+## 2026-06-06 - CI Fix for non-Node environments
+
+**Learning:** To resolve GitHub CI 'lock file not found' failures in non-Node environments, remove the `cache` property from `actions/setup-node`, incorporate `pnpm/action-setup@v4`, and wrap subsequent run steps in shell conditionals (e.g., `if [ -f package.json ]; then ...; fi`).
+
+**Action:** Updated `.github/workflows/node.js.yml` to use `pnpm` and added conditional checks for `package.json`.
