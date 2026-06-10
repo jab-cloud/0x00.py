@@ -193,38 +193,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
             goals.push({ text, completed: false });
             goalInput.value = '';
             saveGoals();
             renderGoals();
+            goalInput.focus();
         }
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.textContent = 'No focus goals set yet.';
+            goalsList.appendChild(li);
+            return;
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
+            checkbox.id = `goal-${index}`;
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
 
-            const span = document.createElement('span');
-            span.textContent = goal.text;
+            const label = document.createElement('label');
+            label.setAttribute('for', `goal-${index}`);
+            label.textContent = goal.text;
+            label.style.cursor = 'pointer';
 
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
             li.appendChild(checkbox);
-            li.appendChild(span);
+            li.appendChild(label);
             li.appendChild(btn);
             goalsList.appendChild(li);
         });
@@ -274,18 +293,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
+            blockInput.focus();
         }
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.className = 'small';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.textContent = 'No apps blocked.';
+            blockedList.appendChild(li);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -317,7 +351,10 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
+
             setTimeout(() => {
+                thinkingMsg.remove();
                 let response = "";
                 let relevantVerse = null;
 
@@ -364,12 +401,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            const em = document.createElement('em');
+            em.textContent = text;
+            em.className = 'small';
+            em.style.opacity = '0.7';
+            em.setAttribute('role', 'status');
+            em.setAttribute('aria-live', 'polite');
+            msgDiv.appendChild(em);
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
