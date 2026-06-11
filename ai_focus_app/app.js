@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
             goals.push({ text, completed: false });
@@ -201,6 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
             saveGoals();
             renderGoals();
         }
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
@@ -211,20 +217,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
+            checkbox.id = `goal-${index}`;
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
 
-            const span = document.createElement('span');
-            span.textContent = goal.text;
+            const label = document.createElement('label');
+            label.setAttribute('for', `goal-${index}`);
+            label.textContent = goal.text;
+            label.style.flexGrow = '1';
+            label.style.cursor = 'pointer';
 
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
             li.appendChild(checkbox);
-            li.appendChild(span);
+            li.appendChild(label);
             li.appendChild(btn);
             goalsList.appendChild(li);
         });
@@ -274,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,6 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
@@ -316,8 +333,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            const thinkingMsg = addMessage('coach', 'Thinking...', true);
 
             setTimeout(() => {
+                thinkingMsg.remove();
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+
                 let response = "";
                 let relevantVerse = null;
 
@@ -364,12 +390,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+            const em = document.createElement('em');
+            em.textContent = text;
+            em.className = 'small';
+            msgDiv.appendChild(em);
+            msgDiv.style.opacity = '0.7';
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
