@@ -286,12 +286,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // App Blocker
     function handleAddBlock() {
         const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
+        if (app) {
+            if (!blockedApps.includes(app)) {
+                blockedApps.push(app);
+                saveBlockedApps();
+                renderBlockedList();
+                blockInput.value = '';
+            } else {
+                showToast('This app is already blocked.');
+            }
         }
-        blockInput.value = '';
         blockInput.focus();
     }
     addBlockBtn.addEventListener('click', handleAddBlock);
