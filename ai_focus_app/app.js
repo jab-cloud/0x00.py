@@ -317,7 +317,18 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            // Micro-UX: Show thinking indicator and disable inputs
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
             setTimeout(() => {
+                // Remove thinking indicator and re-enable inputs
+                if (thinkingMsg) thinkingMsg.remove();
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+
                 let response = "";
                 let relevantVerse = null;
 
@@ -364,12 +375,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            const thinkingEl = document.createElement('em');
+            thinkingEl.className = 'small';
+            thinkingEl.style.opacity = '0.7';
+            thinkingEl.textContent = text;
+            thinkingEl.setAttribute('role', 'status');
+            thinkingEl.setAttribute('aria-live', 'polite');
+            msgDiv.appendChild(thinkingEl);
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
