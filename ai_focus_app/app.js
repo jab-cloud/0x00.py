@@ -193,29 +193,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
             goals.push({ text, completed: false });
             goalInput.value = '';
             saveGoals();
             renderGoals();
+            goalInput.focus();
+        } else if (text) {
+            showToast('Focus on your top 3 goals first!');
         }
-    });
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAddGoal(); });
 
     function renderGoals() {
         goalsList.innerHTML = '';
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
+            const checkboxId = `goal-checkbox-${index}`;
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
+            checkbox.id = checkboxId;
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark as completed: ${goal.text}`);
 
-            const span = document.createElement('span');
-            span.textContent = goal.text;
+            const label = document.createElement('label');
+            label.htmlFor = checkboxId;
+            label.textContent = goal.text;
+            label.style.cssText = 'cursor: pointer; flex-grow: 1;';
 
             const btn = document.createElement('button');
             btn.className = 'remove-block';
@@ -224,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = '×';
 
             li.appendChild(checkbox);
-            li.appendChild(span);
+            li.appendChild(label);
             li.appendChild(btn);
             goalsList.appendChild(li);
         });
@@ -274,15 +285,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
+            blockInput.focus();
         }
-    });
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAddBlock(); });
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
