@@ -316,8 +316,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            const thinking = addMessage('coach', 'Coach is thinking...', true);
 
             setTimeout(() => {
+                thinking.remove();
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+
                 let response = "";
                 let relevantVerse = null;
 
@@ -360,16 +368,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sendBtn.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSendMessage();
+        if (e.key === 'Enter' && !chatInput.disabled) handleSendMessage();
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            const em = document.createElement('em');
+            em.className = 'small';
+            em.style.opacity = '0.7';
+            em.textContent = text;
+            msgDiv.appendChild(em);
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
