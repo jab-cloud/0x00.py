@@ -94,11 +94,20 @@ button {
     border: none;
     border-radius: 8px;
     font-weight: bold;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background-color 0.2s, transform 0.1s, opacity 0.2s;
 }
 
-button:active {
+button:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+button:active:not(:disabled) {
     transform: scale(0.98);
+}
+
+button:disabled, input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 #timer-display {

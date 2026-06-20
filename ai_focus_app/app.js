@@ -220,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -317,12 +318,23 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            // Micro-UX: Disable interaction and show thinking state
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
+
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
 
                 const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
                 const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
+
+                // Micro-UX: Clean up thinking state
+                thinkingMsg.remove();
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
 
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
@@ -364,12 +376,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            const em = document.createElement('em');
+            em.textContent = text;
+            em.className = 'small';
+            em.style.opacity = '0.7';
+            em.setAttribute('role', 'status');
+            em.setAttribute('aria-live', 'polite');
+            msgDiv.appendChild(em);
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
