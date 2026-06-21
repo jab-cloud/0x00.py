@@ -317,6 +317,11 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            // Disable input and show thinking state
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
+
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
@@ -327,7 +332,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    thinkingMsg.remove();
                     addMessage('coach', response);
+                    chatInput.disabled = false;
+                    sendBtn.disabled = false;
+                    chatInput.focus();
                     return;
                 }
 
@@ -353,7 +362,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
+                thinkingMsg.remove();
                 addMessage('coach', response);
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
             }, 1000);
         }
     };
@@ -364,12 +377,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            const thinkingEl = document.createElement('em');
+            thinkingEl.className = 'small';
+            thinkingEl.textContent = text;
+            thinkingEl.style.opacity = '0.7';
+            thinkingEl.setAttribute('role', 'status');
+            thinkingEl.setAttribute('aria-live', 'polite');
+            msgDiv.appendChild(thinkingEl);
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
