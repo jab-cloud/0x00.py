@@ -317,6 +317,11 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            // Disable input while thinking
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+            const thinkingIndicator = addMessage('coach', 'Coach is thinking...', true);
+
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
@@ -327,11 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
-                    return;
-                }
-
-                if (text.includes('tired') || text.includes('weak')) {
+                } else if (text.includes('tired') || text.includes('weak')) {
                     relevantVerse = getRandomVerseByTag('strength');
                 } else if (text.includes('distracted') || text.includes('focus')) {
                     relevantVerse = getRandomVerseByTag('focus');
@@ -341,19 +342,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     relevantVerse = getRandomVerseByTag('peace');
                 }
 
-                if (relevantVerse) {
-                    response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
-                } else {
-                    const coachResponses = [
-                        "You're doing great! Keep it up.",
-                        "Remember your goal: a focused mind is a happy mind.",
-                        "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
-                        "I'm here to keep you accountable. What's your next task?"
-                    ];
-                    response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                if (!response) {
+                    if (relevantVerse) {
+                        response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    } else {
+                        const coachResponses = [
+                            "You're doing great! Keep it up.",
+                            "Remember your goal: a focused mind is a happy mind.",
+                            "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
+                            "I'm here to keep you accountable. What's your next task?"
+                        ];
+                        response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    }
                 }
 
+                thinkingIndicator.remove();
                 addMessage('coach', response);
+
+                // Re-enable input
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
             }, 1000);
         }
     };
@@ -364,12 +373,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            const em = document.createElement('em');
+            em.className = 'small';
+            em.style.opacity = '0.7';
+            em.setAttribute('role', 'status');
+            em.setAttribute('aria-live', 'polite');
+            em.textContent = text;
+            msgDiv.appendChild(em);
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
