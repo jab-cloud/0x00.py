@@ -9,3 +9,7 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-06-26 - AI Coach Async Feedback & Accessibility
+**Learning:** Providing immediate visual and accessibility feedback during asynchronous processing (like AI chat response delay) prevents user confusion and double-submissions. Using ARIA live regions (`role="status"`, `aria-live="polite"`) ensures screen reader users are aware of background processes.
+**Action:** Always implement 'thinking' or loading indicators for async operations and disable interactive elements during the wait period to maintain a clean, predictable UI state.
