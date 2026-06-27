@@ -316,8 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.focus();
+
+            const thinkingMsg = addMessage('coach', 'Coach is thinking...', true);
 
             setTimeout(() => {
+                thinkingMsg.remove();
                 let response = "";
                 let relevantVerse = null;
 
@@ -328,6 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
                     addMessage('coach', response);
+                    chatInput.focus();
                     return;
                 }
 
@@ -354,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 addMessage('coach', response);
+                chatInput.focus();
             }, 1000);
         }
     };
@@ -364,12 +370,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+
+        if (isThinking) {
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+            const em = document.createElement('em');
+            em.textContent = text;
+            em.className = 'small';
+            msgDiv.appendChild(em);
+        } else {
+            msgDiv.textContent = text;
+        }
+
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
