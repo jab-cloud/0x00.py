@@ -391,3 +391,12 @@ button:focus, input:focus {
     outline: 3px solid rgba(74, 144, 226, 0.5);
     outline-offset: 2px;
 }
+
+.empty-state {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    padding: 1rem;
+    width: 100%;
+    display: block;
+}
