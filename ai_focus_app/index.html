@@ -40,13 +40,13 @@
                         <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
                         <button id="add-goal-btn">Add</button>
                     </div>
-                    <ul id="goals-list"></ul>
+                    <ul id="goals-list" aria-label="Priority goals for this session"></ul>
                 </div>
 
                 <div id="protection-challenge" class="hidden">
                     <p><strong>Uninstall Protection Active:</strong> Solve to unlock.</p>
                     <p id="math-problem">5 + 7 = ?</p>
-                    <input type="number" id="challenge-answer" placeholder="Answer">
+                    <input type="number" id="challenge-answer" placeholder="Answer" aria-labelledby="math-problem">
                     <button id="verify-challenge">Unlock</button>
                 </div>
             </div>
