@@ -193,15 +193,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
-        }
-    });
+        if (!text) return goalInput.focus();
+        if (goals.length >= 3) return showToast('Goal limit reached! Complete one first.');
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals(); renderGoals();
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', e => e.key === 'Enter' && handleAddGoal());
 
     function renderGoals() {
         goalsList.innerHTML = '';
@@ -220,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -274,15 +278,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
+            saveBlockedApps(); renderBlockedList();
             blockInput.value = '';
         }
-    });
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', e => e.key === 'Enter' && handleAddBlock());
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
@@ -316,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.focus();
 
             setTimeout(() => {
                 let response = "";
