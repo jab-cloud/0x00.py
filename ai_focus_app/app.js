@@ -193,14 +193,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (text) {
+            if (goals.length < 3) {
+                goals.push({ text, completed: false });
+                goalInput.value = '';
+                saveGoals();
+                renderGoals();
+            } else {
+                showToast("You can only focus on 3 goals at a time.");
+            }
         }
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
@@ -220,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -274,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,6 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
@@ -316,6 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.focus();
+
+            const thinkingMsg = addMessage('coach', 'Thinking...', true);
 
             setTimeout(() => {
                 let response = "";
@@ -327,7 +347,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
+                    thinkingMsg.textContent = response;
+                    thinkingMsg.removeAttribute('role');
+                    thinkingMsg.removeAttribute('aria-live');
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                     return;
                 }
 
@@ -353,7 +376,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                thinkingMsg.removeAttribute('aria-live');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
@@ -364,12 +390,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.innerHTML = `<em>${text}</em>`;
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
