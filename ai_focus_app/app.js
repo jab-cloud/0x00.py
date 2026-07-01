@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
         if (text && goals.length < 3) {
             goals.push({ text, completed: false });
@@ -201,6 +201,12 @@ document.addEventListener('DOMContentLoaded', () => {
             saveGoals();
             renderGoals();
         }
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
@@ -220,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -274,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,6 +289,12 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
@@ -293,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -317,6 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage('user', text);
             chatInput.value = '';
 
+            const thinkingMsg = addMessage('coach', 'Thinking...', true);
+
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
@@ -327,49 +342,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
-                    return;
-                }
-
-                if (text.includes('tired') || text.includes('weak')) {
-                    relevantVerse = getRandomVerseByTag('strength');
-                } else if (text.includes('distracted') || text.includes('focus')) {
-                    relevantVerse = getRandomVerseByTag('focus');
-                } else if (text.includes('lazy') || text.includes('work')) {
-                    relevantVerse = getRandomVerseByTag('diligence');
-                } else if (text.includes('stress') || text.includes('anxious')) {
-                    relevantVerse = getRandomVerseByTag('peace');
-                }
-
-                if (relevantVerse) {
-                    response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
                 } else {
-                    const coachResponses = [
-                        "You're doing great! Keep it up.",
-                        "Remember your goal: a focused mind is a happy mind.",
-                        "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
-                        "I'm here to keep you accountable. What's your next task?"
-                    ];
-                    response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    if (text.includes('tired') || text.includes('weak')) {
+                        relevantVerse = getRandomVerseByTag('strength');
+                    } else if (text.includes('distracted') || text.includes('focus')) {
+                        relevantVerse = getRandomVerseByTag('focus');
+                    } else if (text.includes('lazy') || text.includes('work')) {
+                        relevantVerse = getRandomVerseByTag('diligence');
+                    } else if (text.includes('stress') || text.includes('anxious')) {
+                        relevantVerse = getRandomVerseByTag('peace');
+                    }
+
+                    if (relevantVerse) {
+                        response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    } else {
+                        const coachResponses = [
+                            "You're doing great! Keep it up.",
+                            "Remember your goal: a focused mind is a happy mind.",
+                            "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
+                            "I'm here to keep you accountable. What's your next task?"
+                        ];
+                        response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    }
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.innerHTML = `<em>${text}</em>`;
+            msgDiv.setAttribute('role', 'status');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
