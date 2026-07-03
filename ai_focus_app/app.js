@@ -316,6 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+            chatInput.focus();
+
+            const thinkingMsg = addMessage('coach', 'Thinking...', true);
 
             setTimeout(() => {
                 let response = "";
@@ -327,7 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
+                    thinkingMsg.textContent = response;
+                    thinkingMsg.removeAttribute('role');
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                     return;
                 }
 
@@ -353,23 +358,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.innerHTML = `<em>${text}</em>`;
+            msgDiv.setAttribute('role', 'status');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
