@@ -9,3 +9,9 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-07-05 - Improving Toggle Accessibility and Goal UX
+
+**Learning:** Associating a toggle's descriptive text with a `<label for="...">` instead of a `<span>` not only improves accessibility for screen readers but also significantly enhances the user experience by increasing the interactive hit area (clicking the text toggles the switch).
+
+**Action:** Updated the "AI Safe-Search Guard" toggle to use a properly associated label. Refactored goal management to include 'Enter' key support, automatic refocusing, and descriptive ARIA labels for dynamic list items.
