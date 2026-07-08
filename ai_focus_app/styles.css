@@ -391,3 +391,9 @@ button:focus, input:focus {
     outline: 3px solid rgba(74, 144, 226, 0.5);
     outline-offset: 2px;
 }
+
+/* Visual feedback for disabled states */
+button:disabled, input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
