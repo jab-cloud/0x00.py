@@ -312,10 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
+        const originalText = chatInput.value.trim();
+        const text = originalText.toLowerCase();
         if (text) {
-            addMessage('user', text);
+            addMessage('user', originalText);
             chatInput.value = '';
+
+            const thinkingMsg = addMessage('coach', '', true);
 
             setTimeout(() => {
                 let response = "";
@@ -327,7 +330,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
+                    thinkingMsg.textContent = response;
+                    thinkingMsg.removeAttribute('role');
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                     return;
                 }
 
@@ -353,23 +358,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.innerHTML = '<em>Thinking...</em>';
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
