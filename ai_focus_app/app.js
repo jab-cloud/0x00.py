@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const goalInput = document.getElementById('goal-input');
-    const addGoalBtn = document.getElementById('add-goal-btn');
+    const goalForm = document.getElementById('goal-form');
     const goalsList = document.getElementById('goals-list');
 
     // Verses Database
@@ -193,7 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    const handleAddGoal = () => {
+    const handleAddGoal = (e) => {
+        if (e) e.preventDefault();
         const text = goalInput.value.trim();
         if (text) {
             if (goals.length < 3) {
@@ -208,10 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    addGoalBtn.addEventListener('click', handleAddGoal);
-    goalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') handleAddGoal();
-    });
+    goalForm.addEventListener('submit', handleAddGoal);
 
     function renderGoals() {
         goalsList.innerHTML = '';
