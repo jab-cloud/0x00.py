@@ -193,14 +193,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (text) {
+            if (goals.length < 3) {
+                goals.push({ text, completed: false });
+                goalInput.value = '';
+                saveGoals();
+                renderGoals();
+            } else {
+                showToast('Focus on your top 3 goals first!');
+            }
+            goalInput.focus();
         }
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
