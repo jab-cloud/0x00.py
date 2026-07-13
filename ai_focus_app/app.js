@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (goals.length === 0) {
             const emptyMsg = document.createElement('li');
             emptyMsg.textContent = 'No goals yet. Add your first priority!';
+            emptyMsg.style.display = 'flex';
             emptyMsg.style.justifyContent = 'center';
             emptyMsg.style.color = '#718096';
             emptyMsg.style.fontSize = '0.9rem';
