@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const goalInput = document.getElementById('goal-input');
-    const addGoalBtn = document.getElementById('add-goal-btn');
+    const goalForm = document.getElementById('goal-form');
     const goalsList = document.getElementById('goals-list');
 
     // Verses Database
@@ -193,18 +193,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    goalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
+        if (!text) return;
+
+        if (goals.length < 3) {
             goals.push({ text, completed: false });
             goalInput.value = '';
             saveGoals();
             renderGoals();
+            goalInput.focus();
+        } else {
+            showToast('Goal limit reached! Focus on your top 3 tasks first.');
         }
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+
+        if (goals.length === 0) {
+            const emptyMsg = document.createElement('li');
+            emptyMsg.textContent = 'No goals yet. Add your first priority!';
+            emptyMsg.style.justifyContent = 'center';
+            emptyMsg.style.color = '#718096';
+            emptyMsg.style.fontSize = '0.9rem';
+            emptyMsg.style.padding = '1rem';
+            goalsList.appendChild(emptyMsg);
+            return;
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
