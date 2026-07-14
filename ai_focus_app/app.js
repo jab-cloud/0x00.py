@@ -312,48 +312,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
+        const text = chatInput.value.trim();
+        const lowerText = text.toLowerCase();
         if (text) {
             addMessage('user', text);
             chatInput.value = '';
+
+            const thinkingMsg = addMessage('coach', '<em>Thinking...</em>', true);
 
             setTimeout(() => {
                 let response = "";
                 let relevantVerse = null;
 
                 const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
-                const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
+                const containsRestricted = restrictedKeywords.some(kw => lowerText.includes(kw));
 
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
-                    return;
-                }
-
-                if (text.includes('tired') || text.includes('weak')) {
-                    relevantVerse = getRandomVerseByTag('strength');
-                } else if (text.includes('distracted') || text.includes('focus')) {
-                    relevantVerse = getRandomVerseByTag('focus');
-                } else if (text.includes('lazy') || text.includes('work')) {
-                    relevantVerse = getRandomVerseByTag('diligence');
-                } else if (text.includes('stress') || text.includes('anxious')) {
-                    relevantVerse = getRandomVerseByTag('peace');
-                }
-
-                if (relevantVerse) {
-                    response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
                 } else {
-                    const coachResponses = [
-                        "You're doing great! Keep it up.",
-                        "Remember your goal: a focused mind is a happy mind.",
-                        "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
-                        "I'm here to keep you accountable. What's your next task?"
-                    ];
-                    response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    if (lowerText.includes('tired') || lowerText.includes('weak')) {
+                        relevantVerse = getRandomVerseByTag('strength');
+                    } else if (lowerText.includes('distracted') || lowerText.includes('focus')) {
+                        relevantVerse = getRandomVerseByTag('focus');
+                    } else if (lowerText.includes('lazy') || lowerText.includes('work')) {
+                        relevantVerse = getRandomVerseByTag('diligence');
+                    } else if (lowerText.includes('stress') || lowerText.includes('anxious')) {
+                        relevantVerse = getRandomVerseByTag('peace');
+                    }
+
+                    if (relevantVerse) {
+                        response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    } else {
+                        const coachResponses = [
+                            "You're doing great! Keep it up.",
+                            "Remember your goal: a focused mind is a happy mind.",
+                            "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
+                            "I'm here to keep you accountable. What's your next task?"
+                        ];
+                        response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    }
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
@@ -364,12 +367,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isThinking = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isThinking) {
+            msgDiv.innerHTML = text;
+            msgDiv.setAttribute('role', 'status');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
