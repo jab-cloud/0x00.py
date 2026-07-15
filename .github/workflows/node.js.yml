@@ -27,6 +27,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install pnpm
       uses: pnpm/action-setup@v4
+      with:
+        version: 9
     - name: Syntax check
       run: find . -name "*.js" -not -path "*/node_modules/*" -exec node -c {} \;
     - name: Install dependencies
