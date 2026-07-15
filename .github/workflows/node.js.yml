@@ -25,7 +25,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: Syntax check
+      run: find . -name "*.js" -not -path "*/node_modules/*" -exec node -c {} \;
+    - name: Install dependencies
+      run: if [ -f package.json ]; then pnpm install; fi
+    - name: Build
+      run: if [ -f package.json ]; then pnpm build; fi
+    - name: Test
+      run: if [ -f package.json ]; then pnpm test; fi
