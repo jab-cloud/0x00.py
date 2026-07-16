@@ -312,10 +312,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
+        const originalText = chatInput.value.trim();
+        const text = originalText.toLowerCase();
         if (text) {
-            addMessage('user', text);
+            addMessage('user', originalText);
             chatInput.value = '';
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            const thinkingMsg = addMessage('coach', '<em role="status">Thinking...</em>', true);
+            thinkingMsg.setAttribute('aria-live', 'polite');
 
             setTimeout(() => {
                 let response = "";
@@ -327,11 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
-                    return;
-                }
-
-                if (text.includes('tired') || text.includes('weak')) {
+                } else if (text.includes('tired') || text.includes('weak')) {
                     relevantVerse = getRandomVerseByTag('strength');
                 } else if (text.includes('distracted') || text.includes('focus')) {
                     relevantVerse = getRandomVerseByTag('focus');
@@ -341,19 +343,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     relevantVerse = getRandomVerseByTag('peace');
                 }
 
-                if (relevantVerse) {
-                    response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
-                } else {
-                    const coachResponses = [
-                        "You're doing great! Keep it up.",
-                        "Remember your goal: a focused mind is a happy mind.",
-                        "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
-                        "I'm here to keep you accountable. What's your next task?"
-                    ];
-                    response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                if (!containsRestricted) {
+                    if (relevantVerse) {
+                        response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
+                    } else {
+                        const coachResponses = [
+                            "You're doing great! Keep it up.",
+                            "Remember your goal: a focused mind is a happy mind.",
+                            "Need a break? A 5-minute walk can recharge your dopamine levels naturally.",
+                            "I'm here to keep you accountable. What's your next task?"
+                        ];
+                        response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
+                    }
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('aria-live');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
             }, 1000);
         }
     };
@@ -364,12 +373,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isHTML = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isHTML) {
+            msgDiv.innerHTML = text;
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
