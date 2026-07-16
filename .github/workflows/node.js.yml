@@ -40,5 +40,11 @@ jobs:
         else
           echo "No package.json found, skipping dependency installation."
         fi
-    - run: pnpm run build --if-present
-    - run: pnpm test --if-present
+    - run: |
+        if [ -f package.json ]; then
+          pnpm run build --if-present
+        fi
+    - run: |
+        if [ -f package.json ]; then
+          pnpm test --if-present
+        fi
