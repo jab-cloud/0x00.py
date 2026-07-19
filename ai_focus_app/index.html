@@ -36,10 +36,10 @@
 
                 <div id="goals-area">
                     <h3>Top 3 Goals</h3>
-                    <div class="goal-input-area">
+                    <form id="goal-form" class="goal-input-area">
                         <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
-                        <button id="add-goal-btn">Add</button>
-                    </div>
+                        <button id="add-goal-btn" type="submit">Add</button>
+                    </form>
                     <ul id="goals-list"></ul>
                 </div>
 
@@ -62,13 +62,13 @@
                         <input type="checkbox" id="safe-guard-toggle">
                         <span class="slider round"></span>
                     </label>
-                    <span>AI Safe-Search Guard (Auto-block adult content)</span>
+                    <label for="safe-guard-toggle" style="cursor: pointer; user-select: none;">AI Safe-Search Guard (Auto-block adult content)</label>
                 </div>
 
-                <div class="blocker-input-area">
+                <form id="blocker-form" class="blocker-input-area">
                     <input type="text" id="block-input" placeholder="e.g. instagram.com" aria-label="App to block">
-                    <button id="add-block-btn">Block</button>
-                </div>
+                    <button id="add-block-btn" type="submit">Block</button>
+                </form>
                 <ul id="blocked-list" aria-label="List of blocked apps">
                     <!-- Blocked apps will appear here -->
                 </ul>

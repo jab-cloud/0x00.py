@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const goalInput = document.getElementById('goal-input');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
+    const goalForm = document.getElementById('goal-form');
+    const blockerForm = document.getElementById('blocker-form');
 
     // Verses Database
     const verses = [
@@ -193,14 +195,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    goalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) {
+            showToast('Please enter a goal first.');
+            goalInput.focus();
+            return;
         }
+        if (goals.length >= 3) {
+            showToast('You can only have up to 3 goals to maintain focus!');
+            goalInput.focus();
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
     });
 
     function renderGoals() {
@@ -213,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -241,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             saveGoals();
             renderGoals();
+            goalInput.focus();
         }
     });
 
@@ -250,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
             goals.splice(index, 1);
             saveGoals();
             renderGoals();
+            goalInput.focus();
         }
     });
 
@@ -274,14 +290,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    blockerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
-            blockInput.value = '';
+        if (!app) {
+            showToast('Please enter an app/domain to block.');
+            blockInput.focus();
+            return;
         }
+        if (blockedApps.includes(app)) {
+            showToast(`"${app}" is already blocked.`);
+            blockInput.focus();
+            return;
+        }
+        blockedApps.push(app);
+        saveBlockedApps();
+        renderBlockedList();
+        blockInput.value = '';
+        blockInput.focus();
     });
 
     function renderBlockedList() {
@@ -293,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -307,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             blockedApps.splice(index, 1);
             saveBlockedApps();
             renderBlockedList();
+            blockInput.focus();
         }
     });
 
