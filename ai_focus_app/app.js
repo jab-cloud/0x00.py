@@ -79,10 +79,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeLeft = 25 * 60;
     let isBreak = false;
 
+    // Update theme toggle aria-label and text content helper
+    function updateThemeToggleUI() {
+        if (currentTheme === 'light') {
+            themeToggle.textContent = '🌙';
+            themeToggle.setAttribute('aria-label', 'Switch to Dark Theme');
+        } else {
+            themeToggle.textContent = '☀️';
+            themeToggle.setAttribute('aria-label', 'Switch to Light Theme');
+        }
+    }
+
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeToggleUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -92,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        updateThemeToggleUI();
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -193,13 +204,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) return;
+        if (goals.length >= 3) {
+            showToast('Goal limit reached! You can only focus on 3 goals at a time.');
+            goalInput.focus();
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleAddGoal();
         }
     });
 
@@ -274,13 +297,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
-            blockInput.value = '';
+        if (!app) return;
+        if (blockedApps.includes(app)) {
+            showToast(`"${app}" is already on your blocked list.`);
+            blockInput.focus();
+            return;
+        }
+        blockedApps.push(app);
+        saveBlockedApps();
+        renderBlockedList();
+        blockInput.value = '';
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleAddBlock();
         }
     });
 
