@@ -49,8 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const goalInput = document.getElementById('goal-input');
+    const goalForm = document.getElementById('goal-form');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
+    const blockerForm = document.getElementById('blocker-form');
 
     // Verses Database
     const verses = [
@@ -193,18 +195,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
-        const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
+    if (goalForm) {
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = goalInput.value.trim();
+            if (!text) return;
+
+            if (goals.length >= 3) {
+                showToast('You can only have up to 3 goals to stay focused!');
+                goalInput.value = '';
+                goalInput.focus();
+                return;
+            }
+
             goals.push({ text, completed: false });
             goalInput.value = '';
             saveGoals();
             renderGoals();
-        }
-    });
+            goalInput.focus();
+        });
+    } else if (addGoalBtn) {
+        addGoalBtn.addEventListener('click', () => {
+            const text = goalInput.value.trim();
+            if (!text) return;
+
+            if (goals.length >= 3) {
+                showToast('You can only have up to 3 goals to stay focused!');
+                goalInput.value = '';
+                goalInput.focus();
+                return;
+            }
+
+            goals.push({ text, completed: false });
+            goalInput.value = '';
+            saveGoals();
+            renderGoals();
+            goalInput.focus();
+        });
+    }
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(li);
+            return;
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -222,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.setAttribute('data-index', index);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
 
             li.appendChild(checkbox);
             li.appendChild(span);
@@ -274,18 +317,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
-        const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
-            blockInput.value = '';
-        }
-    });
+    if (blockerForm) {
+        blockerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const app = blockInput.value.trim();
+            if (app) {
+                if (!blockedApps.includes(app)) {
+                    blockedApps.push(app);
+                    saveBlockedApps();
+                    renderBlockedList();
+                } else {
+                    showToast(`${app} is already blocked!`);
+                }
+                blockInput.value = '';
+                blockInput.focus();
+            }
+        });
+    } else if (addBlockBtn) {
+        addBlockBtn.addEventListener('click', () => {
+            const app = blockInput.value.trim();
+            if (app) {
+                if (!blockedApps.includes(app)) {
+                    blockedApps.push(app);
+                    saveBlockedApps();
+                    renderBlockedList();
+                } else {
+                    showToast(`${app} is already blocked!`);
+                }
+                blockInput.value = '';
+                blockInput.focus();
+            }
+        });
+    }
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            blockedList.appendChild(li);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
