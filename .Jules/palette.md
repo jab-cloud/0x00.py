@@ -9,3 +9,9 @@
 **Learning:** Developing a PWA for dopamine control requires combining behavioral triggers (math challenges) with supportive resources (Bible verses). Accessibility and security (XSS) must be handled early to avoid regressions. PWA installation relies heavily on valid icon assets and HTTPS.
 
 **Action:** Developed the FocusMind MVP with Pomodoro, AI Coach, and security features. Implemented XSS protection in list rendering. Added comprehensive deployment and testing documentation. Cleaned up build logs and temporary files after visual verification.
+
+## 2026-07-31 - Micro-UX and Accessibility Polishing
+
+**Learning:** Semantic forms with submit event handlers improve keyboard navigation and provide standard mobile behavior. Additionally, ensuring clear, dynamic ARIA labels (like on theme-toggle) and helpful, visually-centered empty states significantly elevates the feel of list-driven focus tools.
+
+**Action:** Wrapped Goal and Blocker inputs in semantic `<form>` elements, automatically refocused input elements after submission, added descriptive checkbox and removal buttons ARIA labels, implemented a dynamic theme-toggle ARIA label, and added custom-styled list empty state messages.
