@@ -25,7 +25,28 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Verify JavaScript Syntax
+      run: |
+        node -c ai_focus_app/app.js
+        node -c ai_focus_app/sw.js
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        else
+          echo "No package.json found, skipping dependency installation."
+        fi
+    - name: Run build
+      run: |
+        if [ -f package.json ]; then
+          npm run build --if-present
+        else
+          echo "No package.json found, skipping build."
+        fi
+    - name: Run tests
+      run: |
+        if [ -f package.json ]; then
+          npm test
+        else
+          echo "No package.json found, skipping tests."
+        fi
