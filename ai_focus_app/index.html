@@ -36,10 +36,10 @@
 
                 <div id="goals-area">
                     <h3>Top 3 Goals</h3>
-                    <div class="goal-input-area">
+                    <form id="goal-form" class="goal-input-area">
                         <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
-                        <button id="add-goal-btn">Add</button>
-                    </div>
+                        <button id="add-goal-btn" type="submit">Add</button>
+                    </form>
                     <ul id="goals-list"></ul>
                 </div>
 
@@ -65,10 +65,10 @@
                     <span>AI Safe-Search Guard (Auto-block adult content)</span>
                 </div>
 
-                <div class="blocker-input-area">
+                <form id="blocker-form" class="blocker-input-area">
                     <input type="text" id="block-input" placeholder="e.g. instagram.com" aria-label="App to block">
-                    <button id="add-block-btn">Block</button>
-                </div>
+                    <button id="add-block-btn" type="submit">Block</button>
+                </form>
                 <ul id="blocked-list" aria-label="List of blocked apps">
                     <!-- Blocked apps will appear here -->
                 </ul>
@@ -81,10 +81,10 @@
                 <div id="chat-window" aria-live="polite">
                     <div class="message coach">Hello! I'm your coach. Ready to stay focused today?</div>
                 </div>
-                <div class="chat-input-area">
+                <form id="chat-form" class="chat-input-area">
                     <input type="text" id="chat-input" placeholder="Talk to your coach..." aria-label="Chat with AI Coach">
-                    <button id="send-btn" aria-label="Send message">Send</button>
-                </div>
+                    <button id="send-btn" type="submit" aria-label="Send message">Send</button>
+                </form>
             </div>
         </section>
 
