@@ -205,29 +205,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
-        goals.forEach((goal, index) => {
+        if (goals.length === 0) {
             const li = document.createElement('li');
-            li.className = goal.completed ? 'completed' : '';
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = goal.completed;
-            checkbox.setAttribute('data-index', index);
-
-            const span = document.createElement('span');
-            span.textContent = goal.text;
-
-            const btn = document.createElement('button');
-            btn.className = 'remove-block';
-            btn.setAttribute('data-index', index);
-            btn.style.marginLeft = 'auto';
-            btn.textContent = '×';
-
-            li.appendChild(checkbox);
-            li.appendChild(span);
-            li.appendChild(btn);
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No goals yet. Add your first priority!';
             goalsList.appendChild(li);
-        });
+        } else {
+            goals.forEach((goal, index) => {
+                const li = document.createElement('li');
+                li.className = goal.completed ? 'completed' : '';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = goal.completed;
+                checkbox.setAttribute('data-index', index);
+                checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
+
+                const span = document.createElement('span');
+                span.textContent = goal.text;
+
+                const btn = document.createElement('button');
+                btn.className = 'remove-block';
+                btn.setAttribute('data-index', index);
+                btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
+                btn.style.marginLeft = 'auto';
+                btn.textContent = '×';
+
+                li.appendChild(checkbox);
+                li.appendChild(span);
+                li.appendChild(btn);
+                goalsList.appendChild(li);
+            });
+        }
     }
 
     goalsList.addEventListener('change', (e) => {
@@ -286,19 +298,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
-        blockedApps.forEach((app, index) => {
+        if (blockedApps.length === 0) {
             const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.textContent = app;
-            const btn = document.createElement('button');
-            btn.className = 'remove-block';
-            btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
-            btn.textContent = '×';
-            li.appendChild(span);
-            li.appendChild(btn);
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No blocked apps yet. Add one above to stay focused!';
             blockedList.appendChild(li);
-        });
+        } else {
+            blockedApps.forEach((app, index) => {
+                const li = document.createElement('li');
+                const span = document.createElement('span');
+                span.textContent = app;
+                const btn = document.createElement('button');
+                btn.className = 'remove-block';
+                btn.setAttribute('data-index', index);
+                btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
+                btn.textContent = '×';
+                li.appendChild(span);
+                li.appendChild(btn);
+                blockedList.appendChild(li);
+            });
+        }
     }
 
     blockedList.addEventListener('click', (e) => {
