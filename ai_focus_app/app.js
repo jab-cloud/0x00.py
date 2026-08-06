@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const streakEl = document.getElementById('streak-count');
     const scoreEl = document.getElementById('productivity-score');
     const blockInput = document.getElementById('block-input');
-    const addBlockBtn = document.getElementById('add-block-btn');
     const blockedList = document.getElementById('blocked-list');
     const challengeDiv = document.getElementById('protection-challenge');
     const mathProblemEl = document.getElementById('math-problem');
