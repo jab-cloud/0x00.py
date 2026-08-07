@@ -51,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const goalInput = document.getElementById('goal-input');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
+    const goalForm = document.getElementById('goal-form');
+    const blockerForm = document.getElementById('blocker-form');
 
     // Verses Database
     const verses = [
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -93,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -193,18 +197,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    goalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (text) {
+            if (goals.length >= 3) {
+                showToast('FocusMind restricts users to a maximum of 3 goals to maintain focus.');
+            } else {
+                goals.push({ text, completed: false });
+                goalInput.value = '';
+                saveGoals();
+                renderGoals();
+            }
         }
+        goalInput.focus();
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(li);
+            return;
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -274,7 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    blockerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,10 +306,22 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+        blockInput.focus();
     });
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            blockedList.appendChild(li);
+            return;
+        }
+
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -312,10 +348,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
-        if (text) {
-            addMessage('user', text);
+        const originalText = chatInput.value.trim();
+        const text = originalText.toLowerCase();
+        if (originalText) {
+            addMessage('user', originalText);
             chatInput.value = '';
+            chatInput.focus();
+
+            // Simulate AI Coach typing
+            const typingIndicator = addMessage('coach', 'Thinking...', true);
+            typingIndicator.setAttribute('role', 'status');
+            typingIndicator.setAttribute('aria-live', 'polite');
 
             setTimeout(() => {
                 let response = "";
@@ -327,7 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
+                    typingIndicator.textContent = response;
+                    typingIndicator.removeAttribute('role');
+                    typingIndicator.removeAttribute('aria-live');
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                     return;
                 }
 
@@ -353,7 +399,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
-                addMessage('coach', response);
+                typingIndicator.textContent = response;
+                typingIndicator.removeAttribute('role');
+                typingIndicator.removeAttribute('aria-live');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
@@ -364,12 +413,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isHTML = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isHTML) {
+            msgDiv.innerHTML = `<em>${text}</em>`;
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
