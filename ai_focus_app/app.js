@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -205,6 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.fontStyle = 'italic';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.padding = '0.5rem';
+            emptyLi.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(emptyLi);
+            return;
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -286,6 +301,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.fontStyle = 'italic';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.padding = '0.5rem';
+            emptyLi.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            blockedList.appendChild(emptyLi);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -312,10 +338,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
-        if (text) {
-            addMessage('user', text);
+        const originalText = chatInput.value.trim();
+        const text = originalText.toLowerCase();
+        if (originalText) {
+            addMessage('user', originalText);
             chatInput.value = '';
+
+            // Add non-layout-shifting in-place thinking indicator
+            const thinkingMsg = addMessage('coach', 'Thinking...', true);
 
             setTimeout(() => {
                 let response = "";
@@ -327,7 +357,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (containsRestricted) {
                     relevantVerse = getRandomVerseByTag('purity');
                     response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
+                    thinkingMsg.textContent = response;
+                    thinkingMsg.removeAttribute('role');
+                    thinkingMsg.removeAttribute('aria-live');
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
                     return;
                 }
 
@@ -353,7 +386,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
 
-                addMessage('coach', response);
+                thinkingMsg.textContent = response;
+                thinkingMsg.removeAttribute('role');
+                thinkingMsg.removeAttribute('aria-live');
+                chatWindow.scrollTop = chatWindow.scrollHeight;
             }, 1000);
         }
     };
@@ -364,12 +400,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isHTML = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isHTML) {
+            msgDiv.innerHTML = `<em>${text}</em>`;
+            msgDiv.setAttribute('role', 'status');
+            msgDiv.setAttribute('aria-live', 'polite');
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
