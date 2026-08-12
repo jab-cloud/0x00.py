@@ -36,10 +36,10 @@
 
                 <div id="goals-area">
                     <h3>Top 3 Goals</h3>
-                    <div class="goal-input-area">
-                        <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
-                        <button id="add-goal-btn">Add</button>
-                    </div>
+                    <form id="goal-form" class="goal-input-area">
+                        <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal" required>
+                        <button id="add-goal-btn" type="submit">Add</button>
+                    </form>
                     <ul id="goals-list"></ul>
                 </div>
 
