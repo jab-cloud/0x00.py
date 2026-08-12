@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toastContainer = document.getElementById('toast-container');
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
+    const goalForm = document.getElementById('goal-form');
     const goalInput = document.getElementById('goal-input');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
@@ -193,18 +194,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    goalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
+        if (!text) return;
+
+        if (goals.length >= 3) {
+            showToast('Maximum of 3 goals reached. Stay focused!');
             goalInput.value = '';
-            saveGoals();
-            renderGoals();
+            return;
         }
+
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.fontStyle = 'italic';
+            emptyLi.style.padding = '0.5rem';
+            emptyLi.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(emptyLi);
+            return;
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
