@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -193,15 +195,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
-        const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
-        }
-    });
+    const goalForm = document.getElementById('goal-form');
+    if (goalForm) {
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = goalInput.value.trim();
+            if (goals.length >= 3) {
+                showToast('Maximum 3 goals allowed to maintain focus!');
+                return;
+            }
+            if (text) {
+                goals.push({ text, completed: false });
+                goalInput.value = '';
+                saveGoals();
+                renderGoals();
+                goalInput.focus();
+            }
+        });
+    }
 
     function renderGoals() {
         goalsList.innerHTML = '';
@@ -213,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -264,7 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeAnswerEl.focus();
     }
 
-    verifyChallengeBtn.addEventListener('click', () => {
+    challengeDiv.addEventListener('submit', (e) => {
+        e.preventDefault();
         if (parseInt(challengeAnswerEl.value) === currentChallenge) {
             exitFocusMode();
         } else {
@@ -274,15 +288,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
-        const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
-            blockInput.value = '';
-        }
-    });
+    const blockerForm = document.getElementById('blocker-form');
+    if (blockerForm) {
+        blockerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const app = blockInput.value.trim();
+            if (app && !blockedApps.includes(app)) {
+                blockedApps.push(app);
+                saveBlockedApps();
+                renderBlockedList();
+                blockInput.value = '';
+                blockInput.focus();
+            }
+        });
+    }
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
