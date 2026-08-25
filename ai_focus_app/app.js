@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const goalInput = document.getElementById('goal-input');
+    const goalForm = document.getElementById('goal-form');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
 
@@ -193,15 +194,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = (e) => {
+        if (e) e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) {
+            showToast('Please enter a goal description.');
+            goalInput.focus();
+            return;
         }
-    });
+        if (goals.length >= 3) {
+            showToast('Maximum 3 goals allowed. Complete or remove one first!');
+            goalInput.focus();
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
+    };
+
+    if (goalForm) {
+        goalForm.addEventListener('submit', handleAddGoal);
+    } else if (addGoalBtn) {
+        addGoalBtn.addEventListener('click', handleAddGoal);
+    }
 
     function renderGoals() {
         goalsList.innerHTML = '';
