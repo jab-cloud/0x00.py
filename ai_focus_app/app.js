@@ -81,18 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
     updateTimerDisplay();
 
     // Theme Toggle
-    themeToggle.addEventListener('click', () => {
-        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    function updateThemeUI() {
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        updateThemeUI();
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -205,6 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.textContent = 'No goals yet. Add your first priority!';
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.fontStyle = 'italic';
+            goalsList.appendChild(emptyLi);
+            return;
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -286,6 +302,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.fontStyle = 'italic';
+            blockedList.appendChild(emptyLi);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
