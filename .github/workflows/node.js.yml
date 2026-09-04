@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - run: node -c ai_focus_app/app.js
+    - run: if [ -f package.json ]; then npm ci; fi
+    - run: if [ -f package.json ]; then npm run build --if-present; fi
+    - run: if [ -f package.json ]; then npm test; fi
