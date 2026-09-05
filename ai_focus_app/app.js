@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
     themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', currentTheme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme');
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -205,6 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(li);
+            return;
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
