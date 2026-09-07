@@ -48,9 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const toastContainer = document.getElementById('toast-container');
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
+    const goalForm = document.getElementById('goal-form');
     const goalInput = document.getElementById('goal-input');
     const addGoalBtn = document.getElementById('add-goal-btn');
     const goalsList = document.getElementById('goals-list');
+    const blockerForm = document.getElementById('blocker-form');
 
     // Verses Database
     const verses = [
@@ -82,17 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeToggleUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
     updateTimerDisplay();
 
     // Theme Toggle
+    function updateThemeToggleUI() {
+        const isLight = currentTheme === 'light';
+        themeToggle.textContent = isLight ? '🌙' : '☀️';
+        themeToggle.setAttribute('aria-label', isLight ? 'Switch to Dark Theme' : 'Switch to Light Theme');
+    }
+
     themeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        updateThemeToggleUI();
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -193,15 +201,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    function handleAddGoal(e) {
+        if (e) e.preventDefault();
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) {
+            showToast('Please enter a goal description.');
+            return;
         }
-    });
+        if (goals.length >= 3) {
+            showToast('Maximum 3 goals allowed. Complete or remove one first!');
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
+    }
+
+    if (goalForm) {
+        goalForm.addEventListener('submit', handleAddGoal);
+    } else {
+        addGoalBtn.addEventListener('click', handleAddGoal);
+    }
 
     function renderGoals() {
         goalsList.innerHTML = '';
@@ -213,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -274,15 +298,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    function handleAddBlock(e) {
+        if (e) e.preventDefault();
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
+            blockInput.focus();
         }
-    });
+    }
+
+    if (blockerForm) {
+        blockerForm.addEventListener('submit', handleAddBlock);
+    } else {
+        addBlockBtn.addEventListener('click', handleAddBlock);
+    }
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
@@ -293,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
