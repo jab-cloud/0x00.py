@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const safeGuardToggle = document.getElementById('safe-guard-toggle');
     const themeToggle = document.getElementById('theme-toggle');
     const goalInput = document.getElementById('goal-input');
-    const addGoalBtn = document.getElementById('add-goal-btn');
+    const goalForm = document.getElementById('goal-form');
     const goalsList = document.getElementById('goals-list');
 
     // Verses Database
@@ -193,18 +193,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
-        const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
+    if (goalForm) {
+        goalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = goalInput.value.trim();
+            if (!text) {
+                showToast('Please enter a goal description.');
+                goalInput.focus();
+                return;
+            }
+            if (goals.length >= 3) {
+                showToast('Maximum 3 goals allowed. Complete or remove one first!');
+                goalInput.focus();
+                return;
+            }
             goals.push({ text, completed: false });
             goalInput.value = '';
             saveGoals();
             renderGoals();
-        }
-    });
+            goalInput.focus();
+        });
+    }
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.style.fontStyle = 'italic';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(emptyLi);
+            return;
+        }
+
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
