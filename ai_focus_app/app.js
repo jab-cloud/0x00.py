@@ -82,17 +82,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
     updateTimerDisplay();
 
+    function updateThemeUI() {
+        const isLight = currentTheme === 'light';
+        themeToggle.textContent = isLight ? '🌙' : '☀️';
+        const label = isLight ? 'Switch to Dark Theme' : 'Switch to Light Theme';
+        themeToggle.setAttribute('aria-label', label);
+        themeToggle.setAttribute('title', label);
+    }
+
     // Theme Toggle
     themeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        updateThemeUI();
         localStorage.setItem('theme', currentTheme);
     });
 
