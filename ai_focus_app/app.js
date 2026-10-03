@@ -79,10 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let timeLeft = 25 * 60;
     let isBreak = false;
 
+    // Theme UI helper
+    function updateThemeUI() {
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        if (currentTheme === 'light') {
+            themeToggle.textContent = '🌙';
+            themeToggle.setAttribute('aria-label', 'Switch to Dark Theme');
+            themeToggle.setAttribute('title', 'Switch to Dark Theme');
+        } else {
+            themeToggle.textContent = '☀️';
+            themeToggle.setAttribute('aria-label', 'Switch to Light Theme');
+            themeToggle.setAttribute('title', 'Switch to Light Theme');
+        }
+    }
+
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
@@ -91,8 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Toggle
     themeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        updateThemeUI();
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -213,6 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            const actionText = goal.completed ? 'incomplete' : 'complete';
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${actionText}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
