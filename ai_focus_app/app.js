@@ -82,17 +82,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI
     safeGuardToggle.checked = isSafeGuardActive;
     document.documentElement.setAttribute('data-theme', currentTheme);
-    themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+    updateThemeUI();
     updateStatsUI();
     renderBlockedList();
     renderGoals();
     updateTimerDisplay();
 
+    function updateThemeUI() {
+        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        const targetThemeName = currentTheme === 'light' ? 'Dark' : 'Light';
+        themeToggle.setAttribute('aria-label', `Switch to ${targetThemeName} Theme`);
+        themeToggle.setAttribute('title', `Switch to ${targetThemeName} Theme`);
+    }
+
     // Theme Toggle
     themeToggle.addEventListener('click', () => {
         currentTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+        updateThemeUI();
         localStorage.setItem('theme', currentTheme);
     });
 
@@ -193,18 +200,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) {
+            showToast('Please enter a goal description.');
+            return;
         }
+        if (goals.length >= 3) {
+            showToast('Maximum 3 goals allowed. Complete or remove one first!');
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
         goalsList.innerHTML = '';
+        if (goals.length === 0) {
+            const li = document.createElement('li');
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.textContent = 'No goals yet. Add your first priority!';
+            goalsList.appendChild(li);
+            return;
+        }
         goals.forEach((goal, index) => {
             const li = document.createElement('li');
             li.className = goal.completed ? 'completed' : '';
@@ -213,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.type = 'checkbox';
             checkbox.checked = goal.completed;
             checkbox.setAttribute('data-index', index);
+            checkbox.setAttribute('aria-label', `Mark "${goal.text}" as ${goal.completed ? 'incomplete' : 'complete'}`);
 
             const span = document.createElement('span');
             span.textContent = goal.text;
@@ -220,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -264,17 +294,22 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeAnswerEl.focus();
     }
 
-    verifyChallengeBtn.addEventListener('click', () => {
+    const handleVerifyChallenge = () => {
         if (parseInt(challengeAnswerEl.value) === currentChallenge) {
             exitFocusMode();
         } else {
             addMessage('coach', "Wrong answer! I'm keeping Focus Mode active to protect your productivity.");
             showChallenge();
         }
+    };
+
+    verifyChallengeBtn.addEventListener('click', handleVerifyChallenge);
+    challengeAnswerEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleVerifyChallenge();
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
@@ -282,10 +317,25 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBlockedList();
             blockInput.value = '';
         }
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const li = document.createElement('li');
+            li.style.color = '#718096';
+            li.style.fontStyle = 'italic';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'center';
+            li.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            blockedList.appendChild(li);
+            return;
+        }
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
@@ -359,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
+    chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 
