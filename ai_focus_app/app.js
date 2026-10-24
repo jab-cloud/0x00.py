@@ -264,7 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeAnswerEl.focus();
     }
 
-    verifyChallengeBtn.addEventListener('click', () => {
+    challengeDiv.addEventListener('submit', (e) => {
+        e.preventDefault();
         if (parseInt(challengeAnswerEl.value) === currentChallenge) {
             exitFocusMode();
         } else {
