@@ -203,6 +203,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addGoalBtn.click();
+        }
+    });
+
     function renderGoals() {
         goalsList.innerHTML = '';
         goals.forEach((goal, index) => {
@@ -220,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
+            btn.setAttribute('aria-label', `Remove goal: ${goal.text}`);
             btn.style.marginLeft = 'auto';
             btn.textContent = '×';
 
@@ -273,6 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    challengeAnswerEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            verifyChallengeBtn.click();
+        }
+    });
+
     // App Blocker
     addBlockBtn.addEventListener('click', () => {
         const app = blockInput.value.trim();
@@ -281,6 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
+        }
+    });
+
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addBlockBtn.click();
         }
     });
 
@@ -359,8 +381,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSendMessage();
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSendMessage();
+        }
     });
 
     // Helpers
