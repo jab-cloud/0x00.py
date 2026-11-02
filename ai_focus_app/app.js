@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
     const streakEl = document.getElementById('streak-count');
     const scoreEl = document.getElementById('productivity-score');
+    const blockerForm = document.getElementById('blocker-form');
     const blockInput = document.getElementById('block-input');
     const addBlockBtn = document.getElementById('add-block-btn');
     const blockedList = document.getElementById('blocked-list');
@@ -274,18 +275,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
-        const app = blockInput.value.trim();
-        if (app && !blockedApps.includes(app)) {
+    if (blockerForm) {
+        blockerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const app = blockInput.value.trim();
+            if (!app) {
+                showToast('Please enter an app or domain to block.');
+                return;
+            }
+            if (blockedApps.includes(app)) {
+                showToast('That app is already blocked.');
+                return;
+            }
             blockedApps.push(app);
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
-        }
-    });
+            blockInput.focus();
+        });
+    }
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
+        if (blockedApps.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.textContent = 'No blocked apps yet. Add one above to stay focused!';
+            emptyLi.style.display = 'flex';
+            emptyLi.style.justifyContent = 'center';
+            emptyLi.style.color = '#718096';
+            emptyLi.style.fontStyle = 'italic';
+            blockedList.appendChild(emptyLi);
+            return;
+        }
+
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
@@ -293,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = document.createElement('button');
             btn.className = 'remove-block';
             btn.setAttribute('data-index', index);
-            btn.setAttribute('aria-label', `Remove ${app}`);
+            btn.setAttribute('aria-label', `Remove blocked app: ${app}`);
             btn.textContent = '×';
             li.appendChild(span);
             li.appendChild(btn);
