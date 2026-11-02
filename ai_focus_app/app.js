@@ -275,39 +275,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
+    const handleAddBlock = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const app = blockInput.value.trim();
+        if (!app) {
+            showToast('Please enter an app or domain to block.');
+            return;
+        }
+        if (blockedApps.includes(app)) {
+            showToast('That app is already blocked.');
+            return;
+        }
+        blockedApps.push(app);
+        saveBlockedApps();
+        renderBlockedList();
+        blockInput.value = '';
+        blockInput.focus();
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
     if (blockerForm) {
-        blockerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const app = blockInput.value.trim();
-            if (!app) {
-                showToast('Please enter an app or domain to block.');
-                return;
-            }
-            if (blockedApps.includes(app)) {
-                showToast('That app is already blocked.');
-                return;
-            }
-            blockedApps.push(app);
-            saveBlockedApps();
-            renderBlockedList();
-            blockInput.value = '';
-            blockInput.focus();
-        });
+        blockerForm.addEventListener('submit', handleAddBlock);
     }
 
     function renderBlockedList() {
         blockedList.innerHTML = '';
-        if (blockedApps.length === 0) {
-            const emptyLi = document.createElement('li');
-            emptyLi.textContent = 'No blocked apps yet. Add one above to stay focused!';
-            emptyLi.style.display = 'flex';
-            emptyLi.style.justifyContent = 'center';
-            emptyLi.style.color = '#718096';
-            emptyLi.style.fontStyle = 'italic';
-            blockedList.appendChild(emptyLi);
-            return;
-        }
-
         blockedApps.forEach((app, index) => {
             const li = document.createElement('li');
             const span = document.createElement('span');
