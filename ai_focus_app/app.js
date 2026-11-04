@@ -193,14 +193,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Goals Logic
-    addGoalBtn.addEventListener('click', () => {
+    const handleAddGoal = () => {
         const text = goalInput.value.trim();
-        if (text && goals.length < 3) {
-            goals.push({ text, completed: false });
-            goalInput.value = '';
-            saveGoals();
-            renderGoals();
+        if (!text) {
+            showToast('Please enter a goal description.');
+            return;
         }
+        if (goals.length >= 3) {
+            showToast('Maximum 3 goals allowed. Complete or remove one first!');
+            return;
+        }
+        goals.push({ text, completed: false });
+        goalInput.value = '';
+        saveGoals();
+        renderGoals();
+        goalInput.focus();
+    };
+
+    addGoalBtn.addEventListener('click', handleAddGoal);
+    goalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddGoal();
     });
 
     function renderGoals() {
@@ -274,14 +286,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // App Blocker
-    addBlockBtn.addEventListener('click', () => {
+    const handleAddBlock = () => {
         const app = blockInput.value.trim();
         if (app && !blockedApps.includes(app)) {
             blockedApps.push(app);
             saveBlockedApps();
             renderBlockedList();
             blockInput.value = '';
+            blockInput.focus();
         }
+    };
+
+    addBlockBtn.addEventListener('click', handleAddBlock);
+    blockInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleAddBlock();
     });
 
     function renderBlockedList() {
