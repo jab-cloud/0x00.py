@@ -1,0 +1,10 @@
+{
+  "name": "0x00.py",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FocusMind AI Focus & Dopamine Control App",
+  "scripts": {
+    "test": "node -c ai_focus_app/app.js && node -c ai_focus_app/sw.js",
+    "build": "node -c ai_focus_app/app.js"
+  }
+}
