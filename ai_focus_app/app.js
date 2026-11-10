@@ -312,35 +312,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI Coach Chat
     const handleSendMessage = () => {
-        const text = chatInput.value.trim().toLowerCase();
-        if (text) {
-            addMessage('user', text);
-            chatInput.value = '';
+        const rawText = chatInput.value.trim();
+        if (!rawText) return;
 
-            setTimeout(() => {
-                let response = "";
-                let relevantVerse = null;
+        const text = rawText.toLowerCase();
+        addMessage('user', rawText);
+        chatInput.value = '';
 
-                const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
-                const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
 
-                if (containsRestricted) {
-                    relevantVerse = getRandomVerseByTag('purity');
-                    response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
-                    addMessage('coach', response);
-                    return;
-                }
+        const thinkingMsg = addMessage('coach', '<em>Thinking...</em>', true);
+        thinkingMsg.setAttribute('role', 'status');
+        thinkingMsg.setAttribute('aria-live', 'polite');
 
-                if (text.includes('tired') || text.includes('weak')) {
-                    relevantVerse = getRandomVerseByTag('strength');
-                } else if (text.includes('distracted') || text.includes('focus')) {
-                    relevantVerse = getRandomVerseByTag('focus');
-                } else if (text.includes('lazy') || text.includes('work')) {
-                    relevantVerse = getRandomVerseByTag('diligence');
-                } else if (text.includes('stress') || text.includes('anxious')) {
-                    relevantVerse = getRandomVerseByTag('peace');
-                }
+        setTimeout(() => {
+            let response = "";
+            let relevantVerse = null;
 
+            const restrictedKeywords = ['porn', 'sex', 'adult', 'pussy', 'nude'];
+            const containsRestricted = restrictedKeywords.some(kw => text.includes(kw));
+
+            if (containsRestricted) {
+                relevantVerse = getRandomVerseByTag('purity');
+                response = `I'm sorry, I cannot discuss that. Focus on what is pure and good. "${relevantVerse.text}" (${relevantVerse.ref})`;
+            } else if (text.includes('tired') || text.includes('weak')) {
+                relevantVerse = getRandomVerseByTag('strength');
+            } else if (text.includes('distracted') || text.includes('focus')) {
+                relevantVerse = getRandomVerseByTag('focus');
+            } else if (text.includes('lazy') || text.includes('work')) {
+                relevantVerse = getRandomVerseByTag('diligence');
+            } else if (text.includes('stress') || text.includes('anxious')) {
+                relevantVerse = getRandomVerseByTag('peace');
+            }
+
+            if (!containsRestricted) {
                 if (relevantVerse) {
                     response = `I understand. Remember this: "${relevantVerse.text}" (${relevantVerse.ref})`;
                 } else {
@@ -352,10 +358,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     ];
                     response = coachResponses[Math.floor(Math.random() * coachResponses.length)];
                 }
+            }
 
-                addMessage('coach', response);
-            }, 1000);
-        }
+            thinkingMsg.textContent = response;
+            thinkingMsg.removeAttribute('role');
+            thinkingMsg.removeAttribute('aria-live');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.focus();
+        }, 1000);
     };
 
     sendBtn.addEventListener('click', handleSendMessage);
@@ -364,12 +377,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Helpers
-    function addMessage(sender, text) {
+    function addMessage(sender, text, isHTML = false) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
+        if (isHTML) {
+            msgDiv.innerHTML = text;
+        } else {
+            msgDiv.textContent = text;
+        }
         chatWindow.appendChild(msgDiv);
         chatWindow.scrollTop = chatWindow.scrollHeight;
+        return msgDiv;
     }
 
     function updateStatsUI() {
