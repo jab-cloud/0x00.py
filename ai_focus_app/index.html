@@ -38,7 +38,7 @@
                     <h3>Top 3 Goals</h3>
                     <div class="goal-input-area">
                         <input type="text" id="goal-input" placeholder="What's your priority?" aria-label="New focus goal">
-                        <button id="add-goal-btn">Add</button>
+                        <button id="add-goal-btn" aria-label="Add goal">Add</button>
                     </div>
                     <ul id="goals-list"></ul>
                 </div>
@@ -46,7 +46,7 @@
                 <div id="protection-challenge" class="hidden">
                     <p><strong>Uninstall Protection Active:</strong> Solve to unlock.</p>
                     <p id="math-problem">5 + 7 = ?</p>
-                    <input type="number" id="challenge-answer" placeholder="Answer">
+                    <input type="number" id="challenge-answer" placeholder="Answer" aria-label="Answer to math problem">
                     <button id="verify-challenge">Unlock</button>
                 </div>
             </div>
@@ -62,12 +62,12 @@
                         <input type="checkbox" id="safe-guard-toggle">
                         <span class="slider round"></span>
                     </label>
-                    <span>AI Safe-Search Guard (Auto-block adult content)</span>
+                    <label for="safe-guard-toggle">AI Safe-Search Guard (Auto-block adult content)</label>
                 </div>
 
                 <div class="blocker-input-area">
                     <input type="text" id="block-input" placeholder="e.g. instagram.com" aria-label="App to block">
-                    <button id="add-block-btn">Block</button>
+                    <button id="add-block-btn" aria-label="Block app or website">Block</button>
                 </div>
                 <ul id="blocked-list" aria-label="List of blocked apps">
                     <!-- Blocked apps will appear here -->
